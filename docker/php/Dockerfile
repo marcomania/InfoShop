@@ -1,33 +1,48 @@
-# Usar una imagen oficial de PHP 8.2 con FPM
+# Etapa 1: base PHP con FPM
 FROM php:8.2-fpm-alpine
 
 # Establecer el directorio de trabajo
 WORKDIR /var/www/html
 
-# Instalar dependencias del sistema y extensiones de PHP
+# Instalar dependencias necesarias
 RUN apk add --no-cache \
-    build-base \
-    nginx \
-    supervisor \
+    bash \
     curl \
     libzip-dev \
     zip \
-    postgresql-dev # Dependencia para pgsql
+    unzip \
+    postgresql-client \
+    postgresql-dev \
+    oniguruma-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libxml2-dev \
+    && docker-php-ext-install \
+        pdo \
+        pdo_pgsql \
+        pgsql \
+        zip \
+        mbstring
 
-# Instalar extensiones de PHP
-RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
-
-# Instalar Composer (Gestor de dependencias de PHP)
+# Copiar Composer desde imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copiar el código de la aplicación
-COPY . /var/www/html
+# Copiar todos los archivos del proyecto (si quieres puedes excluir .dockerignore)
+COPY . .
 
-# Cambiar el propietario de los archivos para que sea el usuario de Nginx
+# Dar permisos correctos
 RUN chown -R www-data:www-data /var/www/html
 
-# Exponer el puerto 9000 para PHP-FPM
-EXPOSE 9000
+# Copiar el entrypoint al contenedor
+COPY ./docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Comando para iniciar PHP-FPM
+# Establecer el ENTRYPOINT personalizado
+ENTRYPOINT ["entrypoint.sh"]
+
+# Comando por defecto: arranca PHP-FPM
 CMD ["php-fpm"]
+
+# Exponer puerto si lo deseas (opcional, ya que nginx lo usará internamente)
+EXPOSE 9000
