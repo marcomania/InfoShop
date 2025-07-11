@@ -1,0 +1,31 @@
+Server config
+---------------------------------------------------------------------------------
+php artisan optimize:clear - we should run this command before deploying the site
+php artisan db:seed --class=ProductSeeder - if import needed
+npm run build
+
+upload the application without nodemodules 
+make sure to keep template files in storage/app/public/templates folder [copy templates folder from the resources/views/templates]
+remove hot file from public folder to avoid vite client, so it takes build folder
+go to link-storage route to link the storage folder to public folder
+
+add an .htaccess file in root folder
+
+<IfModule mod_rewrite.c>
+# That was ONLY to protect you from 500 errors
+# if your server did not have mod_rewrite enabled
+
+RewriteEngine On
+# RewriteBase /
+# NOT needed unless you're using mod_alias to redirect
+
+RewriteCond %{REQUEST_URI} !/public
+RewriteRule ^(.*)$ public/$1 [L]
+# Direct all requests to /public folder
+
+</IfModule>
+
+Feature update
+---------------------------------------------------------------------------------
+composer update after adding a laravel package,
+then copy the vendor folder to the production server / copy the package folder and composer folder as in vendor folder and move it to the zip file

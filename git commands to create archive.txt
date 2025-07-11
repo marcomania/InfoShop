@@ -1,0 +1,10 @@
+#get staged files and archive it, then run the compress command to include the build folder
+git archive -o update.zip HEAD $(git diff --name-only --cached)
+powershell -Command "Compress-Archive -Path 'public/build' -Update update.zip"
+
+#get staged and previously committed files
+git archive -o update.zip HEAD $(git diff --name-only HEAD^)
+
+#get the update files from the committed files
+git archive -o update.zip HEAD $(git diff --name-only abc123^ abc123)
+
