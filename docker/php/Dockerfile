@@ -8,6 +8,7 @@ WORKDIR /var/www/html
 RUN apk add --no-cache \
     bash \
     curl \
+    mysql-client \
     libzip-dev \
     zip \
     unzip \
@@ -16,7 +17,6 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     libxml2-dev \
-    mysql-client \
     && docker-php-ext-install \
         pdo \
         pdo_mysql \
