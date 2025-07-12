@@ -8,6 +8,7 @@ WORKDIR /var/www/html
 RUN apk add --no-cache \
     bash \
     curl \
+    netcat-openbsd \
     mysql-client \
     libzip-dev \
     zip \
@@ -22,7 +23,7 @@ RUN apk add --no-cache \
         pdo_mysql \
         zip \
         mbstring
-
+        
 # Copiar Composer desde imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
