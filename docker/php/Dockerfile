@@ -11,24 +11,22 @@ RUN apk add --no-cache \
     libzip-dev \
     zip \
     unzip \
-    postgresql-client \
-    postgresql-dev \
     oniguruma-dev \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
     libxml2-dev \
+    mysql-client \
     && docker-php-ext-install \
         pdo \
-        pdo_pgsql \
-        pgsql \
+        pdo_mysql \
         zip \
         mbstring
 
 # Copiar Composer desde imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copiar todos los archivos del proyecto (si quieres puedes excluir .dockerignore)
+# Copiar todos los archivos del proyecto
 COPY . .
 
 # Dar permisos correctos
@@ -41,8 +39,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Establecer el ENTRYPOINT personalizado
 ENTRYPOINT ["entrypoint.sh"]
 
-# Comando por defecto: arranca PHP-FPM
+# Comando por defecto
 CMD ["php-fpm"]
 
-# Exponer puerto si lo deseas (opcional, ya que nginx lo usará internamente)
 EXPOSE 9000
