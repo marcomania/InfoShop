@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { usePage } from "@inertiajs/react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -16,6 +17,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import axios from "axios";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
+
 export default function DailyCashDialog({
     open,
     setOpen,
@@ -30,6 +32,8 @@ export default function DailyCashDialog({
         store_id: auth.store_id,
         transaction_type: "deposit", // Added transaction_type
     };
+
+    const currency_symbol = usePage().props.settings.currency_symbol;
 
     const [formState, setFormState] = useState(initialFormState);
     const [loading, setLoading] = useState(false);
@@ -134,7 +138,7 @@ export default function DailyCashDialog({
                                     input: {
                                         startAdornment: (
                                             <InputAdornment position="start">
-                                                Rs.
+                                                {currency_symbol}
                                             </InputAdornment>
                                         ),
                                     },

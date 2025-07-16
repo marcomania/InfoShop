@@ -20,6 +20,8 @@ import { SharedContext } from "@/Context/SharedContext";
 export default function CashCheckoutDialog({ disabled }) {
     const return_sale = usePage().props.return_sale;
     const return_sale_id = usePage().props.sale_id;
+    const currency_symbol = usePage().props.settings.currency_symbol;
+
     const { cartState, cartTotal, totalProfit, emptyCart } = useCart();
     const { selectedCustomer, saleDate } = useContext(SharedContext);
     const [loading, setLoading] = useState(false);
@@ -119,7 +121,7 @@ export default function CashCheckoutDialog({ disabled }) {
                 onClick={handleClickOpen}
                 disabled={disabled}
             >
-                {cartTotal < 0 ? `REFUND Rs.${Math.abs(cartTotal)}` : `CASH Rs.${cartTotal}`}
+                {cartTotal < 0 ? `REFUND ${currency_symbol} ${Math.abs(cartTotal)}` : `CASH ${currency_symbol} ${cartTotal}`}
             </Button>
             <Dialog
                 fullWidth={true}
@@ -175,7 +177,7 @@ export default function CashCheckoutDialog({ disabled }) {
                             input: {
                                 style: { textAlign: 'center' },
                                 placeholder: cartTotal < 0 ? 'Refund Amount' : 'Amount Received',
-                                startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
+                                startAdornment: <InputAdornment position="start">{currency_symbol}</InputAdornment>,
                             },
                         }}
                     />
@@ -199,7 +201,7 @@ export default function CashCheckoutDialog({ disabled }) {
                                 shrink: true,
                             },
                             input: {
-                                startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
+                                startAdornment: <InputAdornment position="start">{currency_symbol}</InputAdornment>,
                                 endAdornment: (
                                     <InputAdornment position="start">
                                         <IconButton color="primary" onClick={discountPercentage}>
@@ -225,7 +227,7 @@ export default function CashCheckoutDialog({ disabled }) {
                                 input: {
                                     readOnly: true,
                                     style: { textAlign: 'center' },
-                                    startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
+                                    startAdornment: <InputAdornment position="start">{currency_symbol}</InputAdornment>,
                                 },
                             }}
                         />
@@ -241,7 +243,7 @@ export default function CashCheckoutDialog({ disabled }) {
                             slotProps={{
                                 input: {
                                     readOnly: true,
-                                    startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
+                                    startAdornment: <InputAdornment position="start">{currency_symbol}</InputAdornment>,
                                 },
                             }}
                         />

@@ -37,6 +37,7 @@ export default function PaymentsCheckoutDialog({
     const { cartState, cartTotal, emptyCart, totalProfit } = useCart();
     const return_sale = usePage().props.return_sale;
     const return_sale_id = usePage().props.sale_id;
+    const currency_symbol = usePage().props.settings.currency_symbol;
 
     const [loading, setLoading] = useState(false);
 
@@ -218,7 +219,7 @@ export default function PaymentsCheckoutDialog({
                                     input: {
                                         startAdornment: (
                                             <InputAdornment position="start">
-                                                Rs.
+                                                {currency_symbol}
                                             </InputAdornment>
                                         ),
                                         endAdornment: (
@@ -253,7 +254,7 @@ export default function PaymentsCheckoutDialog({
                                     input: {
                                         startAdornment: (
                                             <InputAdornment position="start">
-                                                Rs.
+                                                {currency_symbol}
                                             </InputAdornment>
                                         ),
                                         readOnly: true,
@@ -286,7 +287,7 @@ export default function PaymentsCheckoutDialog({
                                         input: {
                                             startAdornment: (
                                                 <InputAdornment position="start">
-                                                    Rs.
+                                                    {currency_symbol}
                                                 </InputAdornment>
                                             ),
                                         },
@@ -359,7 +360,7 @@ export default function PaymentsCheckoutDialog({
                                     </TableCell>
                                     {/* Display Payment Amount */}
                                     <TableCell align="right">
-                                        <strong>Rs. {(payment.amount).toFixed(2)}</strong>
+                                        <strong>{currency_symbol} {(payment.amount).toFixed(2)}</strong>
                                     </TableCell>
                                     {/* Action Button to delete payment */}
                                     <TableCell align="center">

@@ -25,6 +25,8 @@ import { useReactToPrint } from "react-to-print";
 
 export default function Receipt({ sale, salesItems, settings, user_name, credit_sale = false }) {
     const user = usePage().props.auth.user;
+    const currency_symbol = usePage().props.settings.currency_symbol;
+
     const contentRef = useRef(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
 
@@ -521,7 +523,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                     }
                                                     color="initial"
                                                 >
-                                                    Rs.
+                                                    {currency_symbol}
                                                     {numeral(
                                                         parseFloat(
                                                             sale.total_amount
@@ -563,7 +565,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                         }
                                                         color="initial"
                                                     >
-                                                        Rs.
+                                                        {currency_symbol}
                                                         {numeral(
                                                             sale.discount
                                                         ).format("0,0.00")}
@@ -600,7 +602,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                     }
                                                     color="initial"
                                                 >
-                                                    Rs.
+                                                    {currency_symbol}
                                                     {numeral(
                                                         sale.total_amount
                                                     ).format("0,0.00")}
@@ -636,7 +638,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                     }
                                                     color="initial"
                                                 >
-                                                    Rs.
+                                                    {currency_symbol}
                                                     {numeral(
                                                         sale.amount_received
                                                     ).format("0,0.00")}
@@ -671,7 +673,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                     }
                                                     color="initial"
                                                 >
-                                                    Rs.
+                                                    {currency_symbol}
                                                     {numeral(
                                                         parseFloat(
                                                             sale.amount_received
@@ -711,7 +713,8 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                             sx={styles.receiptSummaryTyp}
                                                             color="initial"
                                                         >
-                                                            Rs.{numeral(
+                                                            {currency_symbol}
+                                                            {numeral(
                                                                 parseFloat(sale.balance) -
                                                                 (parseFloat(sale.amount_received) -
                                                                     parseFloat(sale.total_amount))
@@ -743,7 +746,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                             sx={styles.receiptSummaryTyp}
                                                             color="initial"
                                                         >
-                                                            Rs.{numeral(sale.balance).format("0,0.00")}
+                                                            {currency_symbol} {numeral(sale.balance).format("0,0.00")}
                                                         </Typography>
                                                     </TableCell>
                                                 </TableRow>

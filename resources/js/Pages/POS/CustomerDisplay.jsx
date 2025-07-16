@@ -13,7 +13,7 @@ import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 
 import { SalesProvider, useSales as useCart } from "@/Context/SalesContext";
 
@@ -31,6 +31,7 @@ const Item = styled(Paper)(({ theme }) => ({
 const CartComponent = () => {
     // Destructure cartState and addToCart from the context
     const { cartState, cartTotal } = useCart();
+    const currency_symbol = usePage().props.settings.currency_symbol;
 
     return (
         <Box sx={{ padding: 3 }}>
@@ -49,7 +50,7 @@ const CartComponent = () => {
                             {item.name} | Qty.{item.quantity}
                         </Typography>
                         <Typography variant="h4" color="initial">
-                         <b>RS.{((item.price-item.discount) * item.quantity).toFixed(2)}</b>
+                         <b>{currency_symbol} {((item.price-item.discount) * item.quantity).toFixed(2)}</b>
                         </Typography>
                     </Item>
                 ))}
@@ -58,7 +59,7 @@ const CartComponent = () => {
                         <strong>Total</strong>
                     </Typography>
                     <Typography variant="h4" color="initial">
-                    <strong>Rs.{(cartTotal).toFixed(2)}</strong>
+                    <strong>{currency_symbol} {(cartTotal).toFixed(2)}</strong>
                     </Typography>
                 </Item>
             </Stack>

@@ -1,6 +1,9 @@
 import { Grid2 as Grid, TextField, InputAdornment } from "@mui/material";
+import { usePage } from "@inertiajs/react";
 
 export default function Commission({ handleChange, formState }) {
+    const currency_symbol = usePage().props.settings.currency_symbol;
+
     return (
         <>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -20,7 +23,7 @@ export default function Commission({ handleChange, formState }) {
                         input: {
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    Rs.
+                                    {currency_symbol}
                                 </InputAdornment>
                             ),
                         },

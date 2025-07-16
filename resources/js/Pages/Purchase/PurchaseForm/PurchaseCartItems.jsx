@@ -4,8 +4,11 @@ import { Table, TableBody, Button, TableCell, TableContainer, TableHead, TableRo
 import DeleteIcon from '@mui/icons-material/Delete'; // Import the Delete icon
 import Badge from '@mui/material/Badge';
 import { usePurchase } from "@/Context/PurchaseContext";
+import { usePage } from "@inertiajs/react";
 
 export default function PurchaseCartItems() {
+    const currency_symbol = usePage().props.settings.currency_symbol;
+
     const {
         cartState,
         cartTotal,
@@ -67,7 +70,7 @@ export default function PurchaseCartItems() {
                             <strong>Total Cost Amount:</strong>
                         </TableCell>
                         <TableCell>
-                            <strong>Rs.{cartTotal.toFixed(2)}</strong>
+                            <strong>{currency_symbol} {cartTotal.toFixed(2)}</strong>
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -75,7 +78,7 @@ export default function PurchaseCartItems() {
                             <strong>Total Profit Amount:</strong>
                         </TableCell>
                         <TableCell>
-                            <strong>Rs.{totalProfit.toFixed(2)}</strong>
+                            <strong>{currency_symbol} {totalProfit.toFixed(2)}</strong>
                         </TableCell>
                     </TableRow>
                     <TableRow>

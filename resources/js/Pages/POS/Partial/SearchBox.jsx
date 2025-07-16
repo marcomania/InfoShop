@@ -16,6 +16,8 @@ import { SharedContext } from "@/Context/SharedContext";
 
 export default function SearchBox() {
     const return_sale = usePage().props.return_sale;
+    const currency_symbol = usePage().props.settings.currency_symbol;
+
     const { setCartItemModalOpen, setSelectedCartItem } = useContext(SharedContext);
 
     const { addToCart, cartState } = useCart();
@@ -142,7 +144,7 @@ export default function SearchBox() {
                     getOptionLabel={(option) =>
                         typeof option === "string"
                             ? option
-                            : `${option.name} | ${option.barcode} ${option.sku ? `| ${option.sku}` : ""} | ${option.batch_number} | Rs.${option.price}`
+                            : `${option.name} | ${option.barcode} ${option.sku ? `| ${option.sku}` : ""} | ${option.batch_number} | ${currency_symbol} ${option.price}`
                     }
                     getOptionKey={(option) => option.id + option.batch_id}
                     onChange={(event, product) => {

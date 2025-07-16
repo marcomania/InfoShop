@@ -17,6 +17,8 @@ import Commission from "../ProductTypes/Commission";
 
 export default function CartItemModal() {
     const { return_sale, cart_first_focus } = usePage().props ?? {};
+    const currency_symbol = usePage().props.settings.currency_symbol;
+
     const [showCost, setShowCost] = useState(false);
     const handleClickShowCost = () => setShowCost((show) => !show);
     const focusInputRef = useRef(null);
@@ -293,7 +295,7 @@ export default function CartItemModal() {
                                     input: {
                                         startAdornment: (
                                             <InputAdornment position="start">
-                                                Rs.
+                                                {currency_symbol}
                                             </InputAdornment>
                                         ),
                                     },
@@ -331,7 +333,7 @@ export default function CartItemModal() {
                                         input: {
                                             startAdornment: (
                                                 <InputAdornment position="start">
-                                                    Rs.
+                                                    {currency_symbol}
                                                 </InputAdornment>
                                             ),
                                         },
@@ -365,7 +367,7 @@ export default function CartItemModal() {
                                         input: {
                                             startAdornment: (
                                                 <InputAdornment position="start">
-                                                    Rs.
+                                                    {currency_symbol}
                                                 </InputAdornment>
                                             ),
                                         },
@@ -432,7 +434,7 @@ export default function CartItemModal() {
                                             input: {
                                                 startAdornment: (
                                                     <InputAdornment position="start">
-                                                        Rs.
+                                                        {currency_symbol}
                                                     </InputAdornment>
                                                 ),
                                                 readOnly: true,
@@ -464,7 +466,7 @@ export default function CartItemModal() {
                                             input: {
                                                 startAdornment: (
                                                     <InputAdornment position="start">
-                                                        Rs.
+                                                        {currency_symbol}
                                                     </InputAdornment>
                                                 ),
                                                 readOnly: true,
@@ -502,7 +504,7 @@ export default function CartItemModal() {
                                             input: {
                                                 startAdornment: (
                                                     <InputAdornment position="start">
-                                                        Rs.
+                                                        {currency_symbol}
                                                     </InputAdornment>
                                                 ),
                                             },
@@ -576,7 +578,7 @@ export default function CartItemModal() {
                                             formState.product_type === "reload", //Make cost un editable if reload enabled
                                         startAdornment: (
                                             <InputAdornment position="start">
-                                                Rs.
+                                                {currency_symbol}
                                             </InputAdornment>
                                         ),
                                         endAdornment: (

@@ -16,6 +16,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import axios from "axios";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
+import { usePage } from "@inertiajs/react";
 
 const initialPaymentFormState = {
     amount: 0,
@@ -31,7 +32,7 @@ export default function ExpenseDialog({
     stores,
     refreshExpenses
 }) {
-
+    const currency_symbol = usePage().props.settings.currency_symbol;
     const [expensesForm, setPaymentFormState] = useState(initialPaymentFormState);
 
     const handleClose = () => {
@@ -123,7 +124,7 @@ export default function ExpenseDialog({
                                     input: {
                                         startAdornment: (
                                             <InputAdornment position="start">
-                                                Rs.
+                                                {currency_symbol}
                                             </InputAdornment>
                                         ),
                                     },

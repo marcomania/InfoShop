@@ -32,6 +32,7 @@ import Summaries from "./Partials/Summaries";
 
 export default function Dashboard({ data, logo, version, store_name }) {
     const auth = usePage().props.auth.user;
+    const currency_symbol = usePage().props.settings.currency_symbol;
     const [startDate, setStartDate] = useState(dayjs().format("YYYY-MM-DD"));
     const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
 
@@ -148,7 +149,7 @@ export default function Dashboard({ data, logo, version, store_name }) {
                                     Total valuation
                                 </Typography>
                                 <Typography variant="h5" component="div">
-                                    Rs. {data.totalValuation}
+                                    {currency_symbol} {data.totalValuation}
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -186,7 +187,7 @@ export default function Dashboard({ data, logo, version, store_name }) {
                                     Customer balance
                                 </Typography>
                                 <Typography variant="h5" component="div">
-                                    Rs. {data.customerBalance}
+                                    {currency_symbol} {data.customerBalance}
                                 </Typography>
                             </CardContent>
                         </Card>

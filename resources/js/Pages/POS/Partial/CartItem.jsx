@@ -18,6 +18,7 @@ export default function CartItems() {
   const return_sale = usePage().props.return_sale;
   const { cartState, removeFromCart, emptyCart} = useCart();
   const { setCartItemModalOpen, setSelectedCartItem, cartItemModalOpen } = useContext(SharedContext);
+  const currency_symbol = usePage().props.settings.currency_symbol;
 
   useEffect(() => {
     if(return_sale){
@@ -53,7 +54,7 @@ export default function CartItems() {
                     variant="body2"
                     sx={{ color: 'text.primary', display: 'inline' }}
                   >
-                    RS.{(item.price-item.discount).toFixed(2)} X {item.quantity} = <b>RS.{((item.price-item.discount) * item.quantity).toFixed(2)}</b>
+                    {currency_symbol} {(item.price-item.discount).toFixed(2)} X {item.quantity} = <b>{currency_symbol} {((item.price-item.discount) * item.quantity).toFixed(2)}</b>
                     <br></br>
                   </Typography>
                   </>

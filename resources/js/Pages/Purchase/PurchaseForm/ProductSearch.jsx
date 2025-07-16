@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     Button,
     Box,
@@ -18,6 +18,7 @@ import { usePurchase } from "@/Context/PurchaseContext";
 
 export default function ProductSearch() {
     const { addToCart } = usePurchase();
+    const currency_symbol = usePage().props.settings.currency_symbol;
 
     const [productOptions, setProductOptions] = useState([]); // Stores the options from the API
     const [selectedProductOption, setSelectedProductOption] = useState(null); // Stores the selected option
@@ -110,7 +111,7 @@ export default function ProductSearch() {
                 isClearable // Allow the user to clear the selected option
                 noOptionsMessage={() => "No products found"}
                 getOptionLabel={(option) =>
-                    `${option.name} | ${option.batch_number} | Rs.${option.cost}  | Rs.${option.price} | ${option.quantity} | ${option.barcode} ${option.sku ? `| ${option.sku}` : ""}`
+                    `${option.name} | ${option.batch_number} | ${currency_symbol} ${option.cost}  | ${currency_symbol} ${option.price} | ${option.quantity} | ${option.barcode} ${option.sku ? `| ${option.sku}` : ""}`
                 }
                 getOptionValue={(option) => option.batch_id}
             ></Select2>

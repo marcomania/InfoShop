@@ -25,6 +25,7 @@ class SettingSeeder extends Seeder
             ['meta_key' => 'show_barcode_product_name', 'meta_value' => 'on'],
             ['meta_key' => 'product_code_increment', 'meta_value' => '1000'],
             ['meta_key' => 'modules', 'meta_value' => 'Cheques'],
+            ['meta_key' => 'currency_symbol', 'meta_value' => 'S/.'],
             ['meta_key' => 'misc_settings', 'meta_value' => json_encode([
                 'optimize_image_size' => '0.5',
                 'optimize_image_width' => '400',
@@ -33,6 +34,11 @@ class SettingSeeder extends Seeder
             ])],
         ];
 
-        Setting::insert($settings);
+        foreach ($settings as $setting) {
+            Setting::updateOrInsert(
+                ['meta_key' => $setting['meta_key']],
+                ['meta_value' => $setting['meta_value']]
+            );
+        }
     }
 }
