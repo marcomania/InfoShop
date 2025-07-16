@@ -54,3 +54,27 @@ input[type=number] {
 .Select-menu-outer {
   z-index: 999 !important;
 }
+
+@media print {
+  body {
+    background: white;
+    color: black;
+    margin: 0;
+    font-family: 'Courier New', monospace;
+  }
+
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  .receipt-container {
+    width: 280px !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  header, footer, nav {
+    display: none !important;
+  }
+}

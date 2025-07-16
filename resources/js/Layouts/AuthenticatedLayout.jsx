@@ -189,7 +189,7 @@ function AuthenticatedLayout({ header, children, ...props }) {
                     <NavItem
                         href="/products"
                         icon={InventoryIcon}
-                        label="Products"
+                        label="Productos"
                         open={open}
                         selected={isSelected("/products")}
                     />
@@ -199,7 +199,7 @@ function AuthenticatedLayout({ header, children, ...props }) {
                     <NavItem
                         href="/sales"
                         icon={PaidIcon}
-                        label="Sales"
+                        label="Ventas"
                         open={open}
                         selected={isSelected("/sales")}
                     />
@@ -216,7 +216,7 @@ function AuthenticatedLayout({ header, children, ...props }) {
                     <NavItem
                         href="/customers"
                         icon={CustomerIcon}
-                        label="Customers"
+                        label="Clientes"
                         open={open}
                         selected={isSelected("/customers")}
                     />

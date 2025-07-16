@@ -211,7 +211,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                 <Typography
                                     variant="h6"
                                     sx={{
-                                        fontSize: "15px",
+                                        fontSize: "12px",
                                         fontFamily: settings.sale_print_font,
                                     }}
                                     color="initial"
