@@ -185,12 +185,9 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                 <Card sx={{ width: 160, boxShadow: 0 }}>
                                     <CardMedia
                                         component="img"
-                                        image={
-                                            window.location.origin +
-                                            "/" +
-                                            settings.shop_logo
-                                        }
+                                        image={settings.shop_logo}
                                     />
+                                    RUC: 10082646341
                                 </Card>
                                 {settings.show_receipt_shop_name == 1 && (
                                     <Typography
@@ -207,19 +204,22 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                         {settings.shop_name}
                                     </Typography>
                                 )}
-
+                                <Box sx={{ fontSize: '12px' }}>
+                                    {sale.address}
+                                </Box>
                                 <Typography
                                     variant="h6"
                                     sx={{
-                                        fontSize: "12px",
+                                        fontSize: "20px",
                                         fontFamily: settings.sale_print_font,
                                     }}
                                     color="initial"
                                     className="receipt-address"
                                 >
-                                    {sale.address}
-                                    <br />
-                                    {sale.contact_number}
+                                    <b>Order:
+                                            {sale.sale_prefix +
+                                                "/" +
+                                                sale.invoice_number}</b>
                                 </Typography>
                             </Box>
                             <Divider
@@ -235,15 +235,6 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
 
                                 {!credit_sale && (
                                     <>
-                                        <Typography
-                                            sx={styles.receiptTopText}
-                                            color="initial"
-                                        >
-                                            Order:
-                                            {sale.sale_prefix +
-                                                "/" +
-                                                sale.invoice_number}
-                                        </Typography>
                                         <Typography
                                             sx={styles.receiptTopText}
                                             color="initial"
@@ -278,7 +269,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                     sx={styles.receiptTopText}
                                     color="initial"
                                 >
-                                    Customer: {sale.name}
+                                    Cliente: {sale.name}
                                 </Typography>
                             </Box>
                             <Divider
@@ -772,7 +763,11 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                     __html: settings.sale_receipt_note,
                                 }}
                             />
-                            <div
+                            <Typography sx={{ fontSize: '12px', fontWeight: "bold" }} >
+                                Hor. de Atención: LUN-SAB 9:00am-9:00pm
+                            </Typography>
+                            
+                            <div 
                                 className="receipt-second-note"
                                 style={styles.receiptSummaryText}
                                 dangerouslySetInnerHTML={{

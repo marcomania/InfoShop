@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Contact;
 
@@ -14,6 +15,10 @@ class ContactSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Contact::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        
         // Inserting a walk-in customer record
         Contact::create([
             'name' => 'Guest',     // Name of the walk-in customer

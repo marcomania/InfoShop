@@ -41,7 +41,7 @@ const columns = (handleRowClick) => [
         ),
     },
     {
-        field: "name", headerName: "Customer Name", width: 200,
+        field: "name", headerName: "Cliente", width: 200,
         renderCell: (params) => (
             <Tooltip title={'' + params.row.balance} arrow>
                 <Button>{params.value}</Button>
@@ -49,20 +49,20 @@ const columns = (handleRowClick) => [
         ),
     },
     {
-        field: "discount", headerName: "Discount", width: 80, align: 'right', headerAlign: 'right',
+        field: "discount", headerName: "Descuento", width: 80, align: 'right', headerAlign: 'right',
         renderCell: (params) => {
             return numeral(params.value).format('0,0.00');
         },
     },
     {
-        field: "total_amount", headerName: "Bill Amount", width: 120, align: 'right', headerAlign: 'right',
+        field: "total_amount", headerName: "Importe", width: 120, align: 'right', headerAlign: 'right',
         renderCell: (params) => {
             return numeral(params.value).format('0,0.00');
         },
     },
     {
         field: "amount_received",
-        headerName: "Received",
+        headerName: "Recibido",
         width: 130, align: 'right', headerAlign: 'right',
         renderCell: (params) => (
             <Button
@@ -81,7 +81,7 @@ const columns = (handleRowClick) => [
     },
     {
         field: "change",
-        headerName: "Change",
+        headerName: "Cambio",
         width: 100, align: 'right', headerAlign: 'right',
         renderCell: (params) => {
             const change = params.row.amount_received - params.row.total_amount;
@@ -89,15 +89,16 @@ const columns = (handleRowClick) => [
         },
     },
     // { field: 'profit_amount', headerName: 'Profit Amount', width: 120 },
-    { field: "status", headerName: "Status", width: 100 },
+    { field: "status", headerName: "Estado Venta", width: 100 },
+    { field: "payment_status", headerName: "Estado Pago", width: 100 },
     {
         field: "sale_date",
-        headerName: "Date",
+        headerName: "Fecha",
         width: 100,
     },
     {
         field: "action",
-        headerName: "Actions",
+        headerName: "",
         width: 150,
         renderCell: (params) => (
             <>
@@ -240,7 +241,7 @@ export default function Sale({ sales, contacts }) {
                 <Grid size={{ xs: 12, sm: 3 }}>
                     <Select2
                         className="w-full"
-                        placeholder="Select a contact..."
+                        placeholder="Elija un cliente"
                         styles={{
                             control: (baseStyles, state) => ({
                                 ...baseStyles,
@@ -258,13 +259,13 @@ export default function Sale({ sales, contacts }) {
                 <Grid size={{ xs: 12, sm: 2 }}>
                     <TextField
                         value={searchTerms.status}
-                        label="Status"
+                        label="Estado Venta"
                         onChange={handleSearchChange}
                         name="status"
                         select
                         fullWidth
                     >
-                        <MenuItem value={"all"}>All</MenuItem>
+                        <MenuItem value={"all"}>Todos</MenuItem>
                         <MenuItem value={"completed"}>Completed</MenuItem>
                         <MenuItem value={"pending"}>Pending</MenuItem>
                     </TextField>
@@ -272,7 +273,7 @@ export default function Sale({ sales, contacts }) {
 
                 <Grid size={{ xs: 6, sm: 2 }}>
                     <TextField
-                        label="Start Date"
+                        label="Fecha Inicio"
                         name="start_date"
                         placeholder="Start Date"
                         fullWidth
@@ -289,7 +290,7 @@ export default function Sale({ sales, contacts }) {
 
                 <Grid size={{ xs: 6, sm: 2 }}>
                     <TextField
-                        label="End Date"
+                        label="Fecha Fin"
                         name="end_date"
                         placeholder="End Date"
                         fullWidth
@@ -307,7 +308,7 @@ export default function Sale({ sales, contacts }) {
                 <Grid size={{ xs: 12, sm: 2 }}>
                     <TextField
                         value={searchTerms.query}
-                        label="Search"
+                        label="Buscar"
                         onChange={handleSearchChange}
                         name="query"
                         fullWidth

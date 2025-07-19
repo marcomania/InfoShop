@@ -22,12 +22,13 @@ class DashboardController extends Controller
     public function index()
     {
         $version = config('version.version');
-        $imageUrl = '';
-        if (app()->environment('production')) $imageUrl = 'public/';
+        //$imageUrl = '';
+        //if (app()->environment('production')) $imageUrl = 'public/';
 
         $settings = Setting::whereIn('meta_key', ['shop_logo', 'misc_settings'])->get();
         $settingArray = $settings->pluck('meta_value', 'meta_key')->all();
-        $settingArray['shop_logo'] = $imageUrl . $settingArray['shop_logo'];
+        //$settingArray['shop_logo'] = $imageUrl . $settingArray['shop_logo'];
+        $settingArray['shop_logo'] = asset($settingArray['shop_logo']); 
         $store_id = session('store_id', Auth::user()->store_id);
         $store_name = Store::where('id', $store_id)->value('name');
 

@@ -38,6 +38,8 @@ export default function CashCheckoutDialog({ disabled }) {
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
+        const initialAmount = return_sale ? -cartTotal : cartTotal;
+        setAmountReceived(initialAmount);
         setOpen(true);
     };
 
@@ -121,7 +123,7 @@ export default function CashCheckoutDialog({ disabled }) {
                 onClick={handleClickOpen}
                 disabled={disabled}
             >
-                {cartTotal < 0 ? `REFUND ${currency_symbol} ${Math.abs(cartTotal)}` : `CASH ${currency_symbol} ${cartTotal}`}
+                {cartTotal < 0 ? `REEMBOLSAR ${currency_symbol} ${Math.abs(cartTotal)}` : `CASH ${currency_symbol} ${cartTotal.toFixed(2)}`}
             </Button>
             <Dialog
                 fullWidth={true}
@@ -172,7 +174,7 @@ export default function CashCheckoutDialog({ disabled }) {
                         }}
 
                         sx={{ input: { textAlign: "center", fontSize: '2rem' }, }}
-                        value={amountReceived}
+                        value={amountReceived ?? ''}
                         slotProps={{
                             input: {
                                 style: { textAlign: 'center' },

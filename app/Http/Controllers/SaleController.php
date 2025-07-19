@@ -95,7 +95,7 @@ class SaleController extends Controller
 
         $settings = Setting::all();
         $settingArray = $settings->pluck('meta_value', 'meta_key')->all();
-        $settingArray['shop_logo'] = $imageUrl . $settingArray['shop_logo'];
+        $settingArray['shop_logo'] = asset($settingArray['shop_logo']);
 
         $sale = Sale::select(
             'sales.id',

@@ -33,14 +33,14 @@ const QuantityInput = ({ cartItem }) => {
   };
 
   const decreaseValue = () => {
-    const newQuantity = Math.max(parseFloat(quantity) - 1, min);
+    const newQuantity = Math.max(parseFloat((quantity - 1).toFixed(3)), min);
     setQuantity(newQuantity);
     setInputValue(newQuantity);
     updateProductQuantity(cartItem.id, cartItem.batch_number, newQuantity, cartItem.cart_index);
   };
 
   const increaseValue = () => {
-    const newQuantity = Math.min(parseFloat(quantity) + 1, max);
+    const newQuantity = Math.min(parseFloat((quantity + 1).toFixed(3)), max);
     setQuantity(newQuantity);
     setInputValue(newQuantity);
     updateProductQuantity(cartItem.id, cartItem.batch_number, newQuantity, cartItem.cart_index);

@@ -18,17 +18,19 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // Path to your CSV file
-        $filePath = database_path('seeds/products.csv');  // Update this path if necessary
+        $filePath = database_path('seeders\products.csv');  // Update this path if necessary
 
         // Open the file for reading
         if (($handle = fopen($filePath, 'r')) !== false) {
             // Read the header row to get the column names
-            $headers = fgetcsv($handle);
+            $headers = fgetcsv($handle, 0, ';');
+            $headers[0] = preg_replace('/[\x{FEFF}]/u', '', $headers[0]); // elimina BOM
+            $headers = array_map('trim', $headers);
 
             DB::beginTransaction();
             try {
                 // Loop through each row in the CSV file
-                while (($row = fgetcsv($handle)) !== false) {
+                while (($row = fgetcsv($handle, 0, ';')) !== false) {
                     // Map the row to an associative array using headers
                     $data = array_combine($headers, $row);
 

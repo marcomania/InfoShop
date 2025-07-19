@@ -22,7 +22,7 @@ export default function CartSummary() {
             <ListItem
                 secondaryAction={
                     <Typography variant="h5" color="initial" sx={{fontSize:{sm:'1rem', xs:'1.2rem'}}}>
-                        <strong>{cartState.length} | Qty. {totalQuantity}</strong>
+                        <strong>{cartState.length} | Qty. {parseFloat(totalQuantity).toFixed(3)}</strong>
                     </Typography>
                 }
             >

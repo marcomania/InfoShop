@@ -226,12 +226,17 @@ class POSController extends Controller
                     'store_id' => $sale->store_id,
                     'contact_id' => $sale->contact_id,
                     'transaction_date' => $sale->sale_date, // Current date and time
-                    'amount' => $total,
+                    'amount' => $amountReceived,
                     'payment_method' => $paymentMethod,
                     'transaction_type' => 'sale'
                 ]);
                 $sale->status = 'completed';
-                $sale->payment_status = 'completed';
+                if($amountReceived == $total) {
+                    $sale->payment_status = 'completed';
+                } else {
+                    $sale->payment_status = 'pending';
+                }
+
                 $sale->save();
             } else {
                 foreach ($payments as $payment) {

@@ -88,9 +88,9 @@ export default function CartFooter() {
     const onCartHold = () => {
         handleClose();
         Swal.fire({
-            title: "Do you want to hold this cart?",
+            title: "¿Quieres poner este carrito en espera?",
             showDenyButton: true,
-            confirmButtonText: "YES",
+            confirmButtonText: "SI",
             denyButtonText: `NO`,
         }).then((result) => {
             if (result.isConfirmed) {
@@ -101,9 +101,9 @@ export default function CartFooter() {
 
     const onCartEmpty = () => {
         Swal.fire({
-            title: "Do you want to clear this cart?",
+            title: "¿Quieres borrar todo del carrito?",
             showDenyButton: true,
-            confirmButtonText: "YES",
+            confirmButtonText: "SI",
             denyButtonText: `NO`,
         }).then((result) => {
             if (result.isConfirmed) {
@@ -131,7 +131,7 @@ export default function CartFooter() {
                         size="large"
                         fullWidth
                     >
-                        EMPTY
+                        LIMPIAR
                     </Button>
                 </Grid>
 
@@ -154,7 +154,7 @@ export default function CartFooter() {
                             },
                         }}
                     >
-                        More
+                        Mas
                     </Button>
                     <StyledMenu
                         id="demo-customized-menu"
@@ -200,7 +200,7 @@ export default function CartFooter() {
                         size="large"
                         fullWidth
                     >
-                        PAYMENTS
+                        Formas de pago
                     </Button>
                 </Grid>
             </Grid>

@@ -55,7 +55,7 @@ export default function CartItemsTop({ customers }) {
       <Grid size={{ xs: 12, sm: 4 }} width={'100%'}>
         
           <TextField
-            label="Date"
+            label="Fecha"
             name="sale_date"
             placeholder="Date"
             fullWidth
@@ -89,7 +89,7 @@ export default function CartItemsTop({ customers }) {
                 setSelectedCustomer(newValue)
               }}
               size='small'
-              renderInput={(params) => <TextField {...params} label="Customer" />}
+              renderInput={(params) => <TextField {...params} label="Clientes" />}
             />
           )}
         </Grid>

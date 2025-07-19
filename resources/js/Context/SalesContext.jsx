@@ -10,11 +10,11 @@ const SalesProvider = ({ children, cartType = 'sales_cart'}) => {
   const { cartTotal, totalQuantity, totalProfit } = useMemo(() => {
     return cartState.reduce(
       (acc, item) => {
-        const quantity = parseFloat(item.quantity)
+        const quantity = parseFloat(item.quantity.toFixed(3))
         const cost = parseFloat(item.cost)
         const discountedPrice = parseFloat(item.price) - parseFloat(item.discount);
-        const itemTotal = discountedPrice * quantity;
-        const itemProfit = (discountedPrice - cost) * quantity;
+        const itemTotal = parseFloat((discountedPrice * quantity).toFixed(2));
+        const itemProfit = parseFloat(((discountedPrice - cost) * quantity).toFixed(2));
 
         acc.cartTotal += itemTotal;
         acc.totalQuantity += quantity;

@@ -54,7 +54,7 @@ export default function CartItems() {
                     variant="body2"
                     sx={{ color: 'text.primary', display: 'inline' }}
                   >
-                    {currency_symbol} {(item.price-item.discount).toFixed(2)} X {item.quantity} = <b>{currency_symbol} {((item.price-item.discount) * item.quantity).toFixed(2)}</b>
+                    {currency_symbol} {(item.price-item.discount).toFixed(2)} * {parseFloat(item.quantity.toFixed(3))} = <b>{currency_symbol} {parseFloat((item.price-item.discount) * item.quantity).toFixed(2)}</b>
                     <br></br>
                   </Typography>
                   </>
