@@ -18,6 +18,6 @@ class ProductStock extends Model
         'batch_id',         // Foreign key for the product batch
         'quantity',         // Quantity of stock available
         'product_id',
+        'created_by',
     ];
-
 }

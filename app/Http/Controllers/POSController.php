@@ -235,6 +235,7 @@ class POSController extends Controller
                     $sale->payment_status = 'completed';
                 } else {
                     $sale->payment_status = 'pending';
+                    Contact::where('id', $sale->contact_id)->decrement('balance', $total-$amountReceived);
                 }
 
                 $sale->save();

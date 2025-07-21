@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -23,10 +23,11 @@ export default function CashCheckoutDialog({ disabled }) {
     const currency_symbol = usePage().props.settings.currency_symbol;
 
     const { cartState, cartTotal, totalProfit, emptyCart } = useCart();
-    const { selectedCustomer, saleDate } = useContext(SharedContext);
+    const { selectedCustomer, saleDate, setSelectedCustomer } = useContext(SharedContext);
     const [loading, setLoading] = useState(false);
 
     const [discount, setDiscount] = useState(0);
+    const inputRef = useRef(null);
     const [amountReceived, setAmountReceived] = useState(0);
 
     const handleDiscountChange = (event) => {
@@ -75,6 +76,7 @@ export default function CashCheckoutDialog({ disabled }) {
                     timerProgressBar: true,
                 });
                 emptyCart() //Clear the cart from the Context API
+                setSelectedCustomer(null); // Reset selected customer
                 setAmountReceived(0)
                 setDiscount(0)
                 router.visit('/receipt/' + resp.data.sale_id)
@@ -153,37 +155,42 @@ export default function CashCheckoutDialog({ disabled }) {
                 </IconButton>
                 <DialogContent>
                     <TextField
-                        id="txtAmount"
+                        inputRef={inputRef}
                         fullWidth
                         autoFocus
                         variant="outlined"
-                        label={cartTotal < 0 ? 'Refund' : 'Amount Received'}
+                        label={cartTotal < 0 ? 'Refund' : 'Monto recibido'}
                         type="number"
                         name="amount_received"
-                        onFocus={event => {
-                            event.target.select();
-                        }}
-                    
+                        onFocus={(event) => event.target.select()}
+                        defaultValue={amountReceived.toFixed(2)} // NO usamos `value`
                         onChange={(event) => {
                             const value = event.target.value;
+                            const numericValue = parseFloat(value);
 
-                            const numericValue = parseFloat(value); // Convert to number
-                            setAmountReceived(
-                                return_sale && numericValue > 0 ? -numericValue : numericValue
-                            );
+                            if (!isNaN(numericValue)) {
+                            setAmountReceived(return_sale && numericValue > 0 ? -numericValue : numericValue);
+                            }
                         }}
-
-                        sx={{ input: { textAlign: "center", fontSize: '2rem' }, }}
-                        value={amountReceived ?? ''}
+                        onBlur={() => {
+                            // Al salir, redondeamos y actualizamos el campo manualmente
+                            if (inputRef.current) {
+                            inputRef.current.value = amountReceived.toFixed(2);
+                            }
+                        }}
+                        sx={{ input: { textAlign: "center", fontSize: '2rem' } }}
                         slotProps={{
                             input: {
-                                style: { textAlign: 'center' },
-                                placeholder: cartTotal < 0 ? 'Refund Amount' : 'Amount Received',
-                                startAdornment: <InputAdornment position="start">{currency_symbol}</InputAdornment>,
+                            style: { textAlign: 'center' },
+                            placeholder: cartTotal < 0 ? 'Refund Amount' : 'Amount Received',
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                {currency_symbol}
+                                </InputAdornment>
+                            ),
                             },
                         }}
                     />
-
                     <TextField
                         fullWidth
                         id="txtDiscount"

@@ -34,11 +34,10 @@ export default function CartItemsTop({ customers }) {
   };
 
   useEffect(() => {
-    if (customerList) {
-      const initialCustomer = customerList.find(customer => customer.id === 1) || customerList[0];
-      setSelectedCustomer(initialCustomer || null);
+    if (!selectedCustomer && customerList?.length > 0) {
+      setSelectedCustomer(null); 
     }
-  }, [customers]);
+  }, [customerList]); 
 
   return (
     <Grid sx={{ width: '100%', marginY: { xs: '1rem', sm: '1.2rem' }, alignItems: 'center', justifyContent:'space-between' }} container spacing={2} flexDirection={{ xs: 'column-reverse', sm: 'row' }} alignItems={'center'}>

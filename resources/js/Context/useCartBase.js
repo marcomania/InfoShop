@@ -14,7 +14,7 @@ const cartReducer = (state, action) => {
       );
       if (existingProductIndex !== -1) {
         cart[existingProductIndex].quantity =
-          parseFloat(cart[existingProductIndex].quantity) + 1;
+          parseFloat(cart[existingProductIndex].quantity) ;
       } else {
         const productToAdd = { ...action.payload, quantity: action.payload.quantity };
         cart.push(productToAdd);
@@ -57,6 +57,7 @@ const cartReducer = (state, action) => {
         const updatedItem = {
           ...cart[existingProductIndex],
           ...action.payload,
+          quantity: cart[existingProductIndex].quantity + action.payload.quantity,
         };
 
         cart[existingProductIndex] = updatedItem;

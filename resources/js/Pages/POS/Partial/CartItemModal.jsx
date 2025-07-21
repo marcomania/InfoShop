@@ -48,7 +48,10 @@ export default function CartItemModal() {
                 quantity: -Math.abs(formState.quantity), // Ensure quantity is negative
             };
             updateCartItem(updatedFormState);
-        } else updateCartItem(formState);
+        } else {
+            updateCartItem(formState);
+        }
+            
         handleClose();
     };
 
@@ -142,12 +145,12 @@ export default function CartItemModal() {
                 component={"form"}
                 onSubmit={handleAddToCartSubmit}
                 slotProps={{
-                    backdrop: {
-                        onTransitionEnd: () => {
-                            if (focusInputRef.current) {
-                                focusInputRef.current.focus();
-                            }
-                        },
+                    transition: {
+                    onEntered: () => {
+                        if (focusInputRef.current) {
+                        focusInputRef.current.focus();
+                        }
+                    },
                     },
                 }}
                 aria-describedby="dialog-description"
@@ -215,6 +218,7 @@ export default function CartItemModal() {
                                     type="number"
                                     name="quantity"
                                     label="Quantity"
+                                    autoFocus
                                     variant="outlined"
                                     value={formState.quantity}
                                     // onChange={handleInputChange}
@@ -229,7 +233,8 @@ export default function CartItemModal() {
                                             },
                                         });
                                     }}
-                                    inputRef={cart_first_focus === "quantity" ? focusInputRef : undefined}
+                                    //inputRef={cart_first_focus === "quantity" ? focusInputRef : undefined}
+                                    inputRef={ focusInputRef }
                                     sx={{
                                         mt: "0.5rem",
                                         input: { fontSize: "1rem" },
@@ -241,6 +246,9 @@ export default function CartItemModal() {
                                     slotProps={{
                                         inputLabel: {
                                             shrink: true,
+                                        },
+                                        htmlInput: {
+                                            step: 0.001,
                                         },
                                     }}
                                 />
@@ -489,7 +497,7 @@ export default function CartItemModal() {
                                         required
                                         value={formState.discount}
                                         onChange={handleInputChange}
-                                        inputRef={cart_first_focus === "discount" ? focusInputRef : undefined}
+                                        //inputRef={cart_first_focus === "discount" ? focusInputRef : undefined}
                                         sx={{
                                             mt: "0.5rem",
                                             input: { fontSize: "1rem" },

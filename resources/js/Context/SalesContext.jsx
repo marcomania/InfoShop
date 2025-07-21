@@ -8,7 +8,7 @@ const SalesProvider = ({ children, cartType = 'sales_cart'}) => {
   const { cartState, addToCart, removeFromCart, updateProductQuantity, emptyCart, updateCartItem, holdCart, setHeldCartToCart, removeHeldItem } = useCartBase(cartType);
 
   const { cartTotal, totalQuantity, totalProfit } = useMemo(() => {
-    return cartState.reduce(
+    const result = cartState.reduce(
       (acc, item) => {
         const quantity = parseFloat(item.quantity.toFixed(3))
         const cost = parseFloat(item.cost)
@@ -22,8 +22,12 @@ const SalesProvider = ({ children, cartType = 'sales_cart'}) => {
 
         return acc;
       },
-      { cartTotal: 0, totalQuantity: 0, totalProfit: 0 }
-    );
+      { cartTotal: 0, totalQuantity: 0, totalProfit: 0 });
+
+      result.cartTotal = parseFloat(result.cartTotal.toFixed(1));
+      result.totalProfit = parseFloat(result.totalProfit.toFixed(1));
+
+      return result;
   }, [cartState]);
 
   return (

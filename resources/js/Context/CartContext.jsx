@@ -102,7 +102,7 @@ const CartProvider = ({ children }) => {
   };
 
  const { cartTotal, totalQuantity, totalProfit } = useMemo(() => {
-    return cartState.reduce((acc, item) => {
+    const result = cartState.reduce((acc, item) => {
       const itemTotal = item.price * item.quantity;
       const itemProfit = (item.price - item.cost) * item.quantity; // Ensure you have 'cost' property
 
@@ -112,6 +112,11 @@ const CartProvider = ({ children }) => {
 
       return acc;
     }, { cartTotal: 0, totalQuantity: 0, totalProfit: 0 });
+
+    result.cartTotal = Math.round(result.cartTotal*10)/10;
+    result.totalProfit = Math.round(result.totalProfit*10)/10;
+
+    return result;
   }, [cartState]);
 
   useEffect(() => {

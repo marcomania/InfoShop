@@ -24,5 +24,6 @@ class ProductBatch extends Model
         'discount',
         'contact_id',
         'discount_percentage',
+        'created_by',
     ];
 }

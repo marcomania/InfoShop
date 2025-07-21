@@ -8,7 +8,9 @@ use App\Models\ProductBatch;
 use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\Contact;
+use App\Models\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
 {
@@ -29,6 +31,16 @@ class ProductSeeder extends Seeder
 
             DB::beginTransaction();
             try {
+                $collections = ['Cama', 'Abrigo/Casual', 'Formal', 'Otros'];
+
+                foreach ($collections as $name) {
+                    Collection::create([
+                        'collection_type' => 'category',
+                        'name' => $name,
+                        'slug' => Str::slug($name), // Convierte a minúsculas y reemplaza espacios por guiones
+                    ]);
+                }                
+
                 // Loop through each row in the CSV file
                 while (($row = fgetcsv($handle, 0, ';')) !== false) {
                     // Map the row to an associative array using headers
@@ -39,8 +51,13 @@ class ProductSeeder extends Seeder
                     $product = Product::create([
                         'barcode' => $data['barcode'],        // barcode
                         'name' => $data['name'],              // name
-                        'alert_quantity' => (int) $data['alert_quantity'], // alert_quantity
-                        'unit' => 'PC',
+                        'is_featured' => (boolean) $data['is_featured'], // is_featured (default to 0)
+                        'unit' => $data['unit'],
+                        'category_id' => $data['category_id'],
+                        'is_stock_managed' => false,
+                        'quantity' => 0,
+                        'alert_quantity' => -1,
+                        'created_by' => 1, // Admin user ID, adjust as necessary
                     ]);
 
                     $contact = Contact::where('name', $data['supplier'])->first();
@@ -54,6 +71,7 @@ class ProductSeeder extends Seeder
                         'cost' => (float) str_replace(',', '', $data['cost']),              // cost
                         'price' => (float) str_replace(',', '', $data['price']),            // price
                         'contact_id' => $contactId,
+                        'is_featured' => (boolean) $data['is_featured'], 
                         'created_by' => 1,                    // created_by
                     ]);
 
@@ -63,14 +81,13 @@ class ProductSeeder extends Seeder
                         'store_id' => 1,                      // store_id (1 in your case)
                         'product_id' => $product->id,         // product_id (from products table)
                         'batch_id' => $batch->id,             // batch_id (from product_batches table)
-                        'quantity' => (int) $data['quantity'],      // quantity
+                        'quantity' => 0,
                         'created_by' => 1,                    // created_by
                     ]);
                 }
 
                 // Commit the transaction if everything was successful
                 DB::commit();
-                $this->command->info('Products, product_batches, and product_stocks tables seeded from CSV!');
             } catch (\Exception $e) {
                 // Rollback the transaction if an error occurs
                 DB::rollBack();

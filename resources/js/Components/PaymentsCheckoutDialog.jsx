@@ -25,6 +25,7 @@ import { router } from "@inertiajs/react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { usePage } from "@inertiajs/react";
+import { SharedContext } from "@/Context/SharedContext";
 
 export default function PaymentsCheckoutDialog({
     useCart,
@@ -45,6 +46,8 @@ export default function PaymentsCheckoutDialog({
     const [amount, setAmount] = useState((cartTotal - discount))
     const [payments, setPayments] = useState([])
     const [amountReceived, setAmountReceived] = useState(0)
+
+    const { setSelectedCustomer } = useContext(SharedContext);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const openPayment = Boolean(anchorEl);
@@ -111,6 +114,7 @@ export default function PaymentsCheckoutDialog({
                     timerProgressBar: true,
                 });
                 emptyCart(); //Clear the cart from the Context API
+                setSelectedCustomer(null);
                 setDiscount(0);
                 setPayments([])
                 if (!is_sale) router.visit("/purchases");

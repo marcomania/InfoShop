@@ -17,30 +17,32 @@ export default function ProductItem({ product }) {
     const { addToCart, cartState } = useCart();
     const { setCartItemModalOpen, setSelectedCartItem } = useContext(SharedContext);
 
+    const handleAddToCart = () => {
+        if (return_sale) {
+            product.quantity = -1
+        }
+        else product.quantity = 1;
+
+        if (product.discount_percentage && Number(product.discount_percentage) !== 0) {
+            const discount = (product.price * product.discount_percentage) / 100;
+            product.discount = discount;
+        }
+        console.log(product);
+        addToCart(product, 0);
+
+        if (product.product_type === "reload") {
+            const lastAddedIndex = cartState.length > 0 ? cartState.length : 0;
+            product.cart_index = lastAddedIndex;
+        }
+
+        setSelectedCartItem(product);
+        setCartItemModalOpen(true);
+    }
+
+
     return (
         <Card
-            onClick={() => {
-
-                if (return_sale) {
-                    product.quantity = -1
-                }
-                else product.quantity = 1;
-
-                if (product.discount_percentage && Number(product.discount_percentage) !== 0) {
-                    const discount = (product.price * product.discount_percentage) / 100;
-                    product.discount = discount;
-                }
-                console.log(product);
-                addToCart(product, product.quantity);
-
-                if (product.product_type === "reload") {
-                    const lastAddedIndex = cartState.length > 0 ? cartState.length : 0;
-                    product.cart_index = lastAddedIndex;
-                }
-
-                setSelectedCartItem(product);
-                setCartItemModalOpen(true);
-            }}
+            onClick={handleAddToCart}
             sx={{ height: '100%', position: 'relative' }}
         >
             <CardMedia

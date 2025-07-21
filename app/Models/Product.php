@@ -31,6 +31,7 @@ class Product extends Model
         'product_type',
         'meta_data',
         'attachment_id',
+        'created_by',
     ];
 
     // Accessor for formatted updated_at date

@@ -137,7 +137,7 @@ export default function Store({ stores, current_store_id, message }) {
                 spacing={2}
             >
                 {stores.map((store) => (
-                  <Grid size={{xs:12, sm:6, md:3}} display={'flex'}> 
+                  <Grid size={{xs:12, sm:6, md:3}} display={'flex'} key={store.id} > 
                     <Card key={store.id} variant="outlined" sx={{ width: "100%", height: "100%" }}>
                         <CardContent>
                             <Typography
