@@ -71,7 +71,7 @@ const StyledMenu = styled((props) => (
 export default function CartFooter() {
     const return_sale = usePage().props.return_sale;
     const { cartState, holdCart, emptyCart } = useCart();
-    const { selectedCustomer, saleDate } = useContext(SharedContext);
+    const { selectedCustomer, saleDate, setSelectedCustomer } = useContext(SharedContext);
     const [heldModalOpen, setHeldModalOpen] = useState(false);
     const [paymentsModalOpen, setPaymentsModalOpen] = useState(false);
     const [quotationModalOpen, setQuotationModalOpen] = useState(false);
@@ -108,6 +108,7 @@ export default function CartFooter() {
         }).then((result) => {
             if (result.isConfirmed) {
                 emptyCart();
+                setSelectedCustomer(null); 
             }
         });
     };
@@ -125,7 +126,7 @@ export default function CartFooter() {
                         color="error"
                         endIcon={<DeleteForeverIcon />}
                         disabled={
-                            cartState.length === 0 || selectedCustomer === null
+                            cartState.length === 0// || selectedCustomer === null
                         }
                         onClick={onCartEmpty}
                         size="large"
