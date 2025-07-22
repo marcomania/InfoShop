@@ -469,7 +469,7 @@ class ReportController extends Controller
             'contacts.name as contact_name',
             'total_amount',
             'discount',
-            DB::raw(($type === 'sale') ? 'sales.sale_date as date' : 'purchases.purchase_date as date')
+            DB::raw(($type === 'sale') ? 'sales.sale_date as created_at' : 'purchases.purchase_date as created_at')
         );
         $detailsQuery = $detailsQuery->leftJoin('contacts', ($type === 'sale') ? 'sales.contact_id' : 'purchases.contact_id', '=', 'contacts.id');
         $detailsQuery = $detailsQuery->where(($type === 'sale') ? 'sales.id' : 'purchases.id', $transaction_id);

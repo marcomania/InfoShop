@@ -154,7 +154,7 @@ export default function PaymentsCheckoutDialog({
         else if (amount) {
             const newPayment = { payment_method: paymentMethod, amount: parseFloat(amount) };
             setPayments([...payments, newPayment]);
-            const newBalance = netTotal - balance;
+            const newBalance = (netTotal - balance).toFixed(2);
             setAmount(newBalance > 0 ? newBalance : 0); // Clear the amount input after adding
         }
         handlePaymentClose()

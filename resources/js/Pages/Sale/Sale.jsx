@@ -152,7 +152,7 @@ export default function Sale({ sales, contacts }) {
             case "add_payment":
                 const amountLimit = Math.max(
                     0,
-                    parseFloat(sale.total_amount) - parseFloat(sale.amount_received)
+                    (parseFloat(sale.total_amount) - parseFloat(sale.amount_received)).toFixed(2)
                 );
                 setSelectedContact(sale.contact_id);
                 setAmountLimit(amountLimit);

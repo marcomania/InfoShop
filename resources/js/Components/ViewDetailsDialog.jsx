@@ -18,6 +18,8 @@ import Tabs from '@mui/material/Tabs';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 
 export default function ViewDetailsDialog({
     open,
@@ -27,6 +29,7 @@ export default function ViewDetailsDialog({
 }) {
     const [tabValue, setTabValue] = React.useState(0);
     const [details, setDetails] = useState([]);
+    dayjs.extend(utc)
 
     const handleChange = (event, newValue) => {
         setTabValue(newValue);
@@ -134,7 +137,7 @@ export default function ViewDetailsDialog({
                             </TableRow>
                             <TableRow>
                                 <TableCell align="left">Created At</TableCell>
-                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{dayjs(details.created_at).format('DD-MM-YYYY hh:mm A')}</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{dayjs(details.created_at).utc().format("DD-MM-YYYY")}</TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
