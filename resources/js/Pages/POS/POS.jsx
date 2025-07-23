@@ -211,8 +211,18 @@ function POS({ products, customers, return_sale, categories }) {
                     >
                         <DrawerHeader>
                             <CartItemsTop customers={customers} />
-                            <IconButton onClick={handleDrawerClose}>
-                                <ChevronLeftIcon />
+                            <IconButton
+                                onClick={handleDrawerClose}
+                                aria-label="Cerrar"
+                                sx={{
+                                    bgcolor: '#f0f0f0',
+                                    border: '1px solid #ccc',
+                                    '&:hover': {
+                                        bgcolor: '#e0e0e0',
+                                    },
+                                }}
+                            >
+                                <ChevronLeftIcon sx={{ color: '#333' }} />
                             </IconButton>
                         </DrawerHeader>
                         {drawer}

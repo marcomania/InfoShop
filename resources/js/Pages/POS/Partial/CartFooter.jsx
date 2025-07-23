@@ -115,11 +115,7 @@ export default function CartFooter() {
 
     return (
         <Grid container sx={{ pt: "4.5rem" }} spacing={1}>
-            <Grid
-                container
-                spacing={1}
-                width={"100%"}
-            >
+            <Grid container spacing={1} width={"100%"} >
                 <Grid size={{ xs: 6, sm: 3 }}>
                     <Button
                         variant="contained"
@@ -135,7 +131,6 @@ export default function CartFooter() {
                         LIMPIAR
                     </Button>
                 </Grid>
-
                 <Grid size={{ xs: 6, sm: 3 }}>
                     <Button
                         id="demo-customized-button"
@@ -190,7 +185,7 @@ export default function CartFooter() {
                         </MenuItem>
                     </StyledMenu>
                 </Grid>
-                <Grid size={{ xs: 6, sm: 6 }}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                     <Button
                         variant="contained"
                         endIcon={<AddCardIcon />}
