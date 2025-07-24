@@ -33,7 +33,7 @@
 
 .swal2-container {
     z-index: 9999;
-  };
+}
 
 #btn-manage-stock button.MuiButtonBase-root.MuiToggleButtonGroup-grouped.MuiToggleButtonGroup-groupedHorizontal.MuiToggleButton-root.Mui-selected.MuiToggleButton-fullWidth.MuiToggleButton-sizeMedium.MuiToggleButton-primary.p-5.css-uobg7u-MuiButtonBase-root-MuiToggleButton-root {
   padding: 15px;
