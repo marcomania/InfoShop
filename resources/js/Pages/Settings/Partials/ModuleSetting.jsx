@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 
 const App = ({ handleSubmit, settingFormData, setSettingFormData, settings }) => {
-    const modules_list = ['Cheques', 'Reloads',];
+    const modules_list = ['Cheques', 'Reloads','Inventory'];
     const [activatedModules, setActivatedModules] = useState(settings.modules ? settings.modules.split(',') : []);
     const { enqueueSnackbar } = useSnackbar();
 

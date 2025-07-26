@@ -29,6 +29,7 @@ use App\Http\Controllers\EmployeeBalanceController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ChequeController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\InventoryController;
 
 Route::get('/', function () {
     return redirect('login');
@@ -179,6 +180,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
     Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
 
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/inventory-items', [InventoryController::class, 'store'])->name('inventory.store');
+    Route::post('/inventory-items/{id}', [InventoryController::class, 'update'])->name('inventory.update');
+    Route::delete('/inventory-items/{id}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
+    Route::post('/inventory-single-transaction', [InventoryController::class, 'inventorySingleTransactionStore']);
+    Route::get('/inventory-purchase', [InventoryController::class, 'inventoryPurchase']);
+    Route::post('/inventory-purchase', [InventoryController::class, 'inventoryPurchaseStore']);
+    Route::get('/inventory-logs', [InventoryController::class, 'inventoryLogs']);
+    
     Route::get('/clear-cache', function () {
         Artisan::call('cache:clear');
         Artisan::call('config:clear');

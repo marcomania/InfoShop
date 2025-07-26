@@ -15,6 +15,7 @@ export default function UserRoleDialog({ open, handleClose, user_role }) {
   const permissions = [
     "pos",
     "products",
+    "inventory",
     "sales",
     "customers",
     "vendors",

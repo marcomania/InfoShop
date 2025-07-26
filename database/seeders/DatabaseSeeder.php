@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
         $permissions = [
             'pos',
             'products',
+            'inventory',
             'sales',
             'customers',
             'vendors',
@@ -59,6 +60,7 @@ class DatabaseSeeder extends Seeder
         $adminPermissions = [
             'pos',
             'products',
+            'inventory',
             'sales',
             'customers',
             'vendors',

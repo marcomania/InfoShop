@@ -62,7 +62,7 @@ export default function QuantityModal({
     const [formState, setFormState] = useState(initialFormState);
     const [loading, setLoading] = useState(false)
     const handleClose = () => {
-        setFormState(initialFormState)
+        // setFormState(initialFormState)
         setModalOpen(false)
     };
 
@@ -161,6 +161,7 @@ export default function QuantityModal({
 
     return (
         <React.Fragment>
+            {console.log('Batch ID:', formState.batch_id)}
             <Dialog
                 fullWidth={true}
                 maxWidth={"sm"}

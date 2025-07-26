@@ -12,6 +12,7 @@ use App\Models\Contact;
 use App\Models\Sale;
 use App\Models\Transaction;
 use App\Models\Expense;
+use App\Models\InventoryTransaction;
 use App\Models\Setting;
 use App\Models\Store;
 use App\Models\SalaryRecord;
@@ -90,6 +91,7 @@ class DashboardController extends Controller
         $startDate = $request->start_date;
         $endDate = $request->end_date;
 
+        $data['inventory_purchase'] = InventoryTransaction::where('transaction_type', 'purchase')->whereBetween('transaction_date', [$startDate, $endDate])->sum('total');
         $data['total_sales'] = Sale::whereBetween('sale_date', [$startDate, $endDate])->sum('total_amount');
         $data['cash_in'] = Transaction::where('payment_method', 'cash')->whereBetween('transaction_date', [$startDate, $endDate])->sum('amount');
         $data['expenses'] = Expense::whereBetween('expense_date', [$startDate, $endDate])->sum('amount');
