@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Grid2 as Grid, Paper, TextField, MenuItem } from '@mui/material';
+import { Box, Button, Grid, Paper, TextField, MenuItem } from '@mui/material';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';

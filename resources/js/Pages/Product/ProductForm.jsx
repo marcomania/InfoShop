@@ -19,7 +19,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import "dayjs/locale/en-gb";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";

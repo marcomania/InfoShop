@@ -6,7 +6,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
     Button,
     Box,
-    Grid2 as Grid,
+    Grid,
     MenuItem,
     TextField,
     Chip,

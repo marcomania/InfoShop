@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { Dialog, DialogContent, Grid2 as Grid, TextField } from '@mui/material';
+import { Dialog, DialogContent, Grid, TextField } from '@mui/material';
 import browserImageCompression from 'browser-image-compression';
 import dayjs from 'dayjs';
 import axios from "axios";

@@ -9,7 +9,7 @@ import dayjs from "dayjs";
 
 import {
     IconButton,
-    Grid2 as Grid,
+    Grid,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import {
     Card,
-    Grid2 as Grid,
+    Grid,
     TextField,
 } from "@mui/material";
 

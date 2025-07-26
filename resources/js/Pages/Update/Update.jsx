@@ -4,7 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import {
     Typography,
-    Grid2 as Grid,
+    Grid,
     Button,
     Paper,
 } from "@mui/material";

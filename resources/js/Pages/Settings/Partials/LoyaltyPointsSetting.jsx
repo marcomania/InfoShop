@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Grid2 as Grid, Paper, TextField, Typography } from '@mui/material';
+import { Box, Button, Grid, Paper, TextField, Typography } from '@mui/material';
 import { useEffect } from 'react';
 
 const LoyaltyPointsSetting = ({ handleSubmit, settingFormData, handleChange, setSettingFormData, settings }) => {

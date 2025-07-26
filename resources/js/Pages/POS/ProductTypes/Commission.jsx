@@ -1,4 +1,4 @@
-import { Grid2 as Grid, TextField, InputAdornment } from "@mui/material";
+import { Grid, TextField, InputAdornment } from "@mui/material";
 import { usePage } from "@inertiajs/react";
 
 export default function Commission({ handleChange, formState }) {

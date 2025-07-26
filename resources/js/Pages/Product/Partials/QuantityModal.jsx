@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import {
     IconButton, MenuItem,
     TextField, FormControl, InputLabel, Select,
-    Grid2 as Grid, DialogTitle, DialogContent, DialogActions, Dialog, Button
+    Grid, DialogTitle, DialogContent, DialogActions, Dialog, Button
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";

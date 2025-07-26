@@ -7,7 +7,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import {
     IconButton,
     TextField,
-    Grid2 as Grid,
+    Grid,
     Divider,
     MenuItem
 } from "@mui/material";

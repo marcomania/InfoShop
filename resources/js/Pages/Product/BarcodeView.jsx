@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePage, Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Box, Grid2 as Grid, Button } from '@mui/material';
+import { Box, Grid, Button } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import Swal from 'sweetalert2';
 import Alpine from 'alpinejs';

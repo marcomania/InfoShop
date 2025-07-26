@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage } from '@inertiajs/react';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { Button, Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';

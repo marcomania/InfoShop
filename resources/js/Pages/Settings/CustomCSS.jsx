@@ -1,6 +1,6 @@
 // import * as React from "react";
 // import Button from "@mui/material/Button";
-// import Grid from "@mui/material/Grid2";
+// import Grid from "@mui/material/Grid";
 // import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 // import { Head, router } from "@inertiajs/react";
 // import { useState, useEffect } from "react";

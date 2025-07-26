@@ -5,7 +5,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';

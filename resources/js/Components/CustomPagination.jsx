@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Grid2 as Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 
 const CustomPagination = ({ dataLinks, dataLastPage, refreshTable }) => {
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router } from "@inertiajs/react";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import {
     Button,
     Box,

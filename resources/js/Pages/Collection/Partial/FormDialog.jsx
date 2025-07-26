@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Grid2 as Grid } from '@mui/material';
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Grid } from '@mui/material';
 
 import Swal from 'sweetalert2';
 

@@ -6,7 +6,7 @@ import {
     Box,
     Divider,
     Typography,
-    Grid2 as Grid,
+    Grid,
     InputLabel,
     IconButton,
     Autocomplete,

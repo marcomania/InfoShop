@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router } from "@inertiajs/react";
-import { Button, Box, IconButton, TextField, MenuItem, Tooltip, Chip, Grid2 as Grid } from "@mui/material";
+import { Button, Box, IconButton, TextField, MenuItem, Tooltip, Chip, Grid } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Select2 from "react-select";
 import numeral from "numeral";

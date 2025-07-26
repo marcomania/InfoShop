@@ -9,7 +9,7 @@ import {
     IconButton,
     Toolbar,
     Typography,
-    Grid2 as Grid,
+    Grid,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";

@@ -9,7 +9,7 @@ import {
     Chip,
     MenuItem,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import DeleteIcon from "@mui/icons-material/HighlightOff";

@@ -8,7 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Swal from 'sweetalert2';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 
 export default function FormDialog({ open, handleClose, store }) {
 

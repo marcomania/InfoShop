@@ -7,7 +7,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import {
     IconButton,
     Table, TableHead, TableBody, TableRow, TableCell,
-    Box, Typography, Card, CardContent, Grid2 as Grid
+    Box, Typography, Card, CardContent, Grid
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";

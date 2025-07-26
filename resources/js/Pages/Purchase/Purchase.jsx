@@ -4,7 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router, Link } from "@inertiajs/react";
 import { useState } from "react";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import {
     Button,
     Box,

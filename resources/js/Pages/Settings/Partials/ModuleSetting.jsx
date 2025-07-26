@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Button, Grid2 as Grid, CardContent, Typography, CardActions } from '@mui/material';
+import { Button, Grid, CardContent, Typography, CardActions } from '@mui/material';
 import Card from '@mui/material/Card';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 
