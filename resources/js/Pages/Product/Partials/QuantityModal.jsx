@@ -8,7 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import Swal from "sweetalert2";
 import CreatableSelect from 'react-select/creatable';
-import { usePage } from "@inertiajs/react";
+import { usePage, Link, router } from "@inertiajs/react";
 
 const reasonOptions = [
     { value: 'Stock Entry', label: 'Stock Entry' },
@@ -183,6 +183,9 @@ export default function QuantityModal({
                     sx={{ alignItems: "center", display: "flex" }}
                 >
                     {"QUANTITY ADJUSTMENT"}
+                    {/* <Link href={'/stock/adjustment-log'} className="ml-5 text-sky-600">
+                        Adjustment Log
+                    </Link> */}
                 </DialogTitle>
                 <IconButton
                     aria-label="close"

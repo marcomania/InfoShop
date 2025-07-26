@@ -562,11 +562,5 @@ class ProductController extends Controller
             'barcode_settings' => $settingArray,
             'template' => $content,
         ]);
-
-        // return Inertia::render('Product/BarcodeView', [
-        //     'product' => $product,
-        //     'barcode_settings' => $settingArray,
-        //     'template' => $template->meta_value,
-        // ]);
     }
 }

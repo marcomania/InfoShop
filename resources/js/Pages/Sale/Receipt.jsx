@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Head, usePage } from "@inertiajs/react";
 import {
     Button,
@@ -22,6 +22,7 @@ import { styled } from "@mui/material/styles";
 import numeral from "numeral";
 import dayjs from "dayjs";
 import { useReactToPrint } from "react-to-print";
+import Barcode from "./Barcode";
 
 export default function Receipt({ sale, salesItems, settings, user_name, credit_sale = false }) {
     const user = usePage().props.auth.user;
@@ -29,6 +30,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
 
     const contentRef = useRef(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
+    const [receiptNo, setReceiptNo] = useState(' ' + sale.sale_prefix + "/" + sale.invoice_number);
 
     const handleWhatsAppShare = () => {
         const currentUrl = window.location.href; // Get the current URL
@@ -39,7 +41,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
         // Check if the WhatsApp number is empty
         if (!whatsappNumber) {
             // Prompt the user for their WhatsApp number
-            whatsappNumber = prompt("Please enter the WhatsApp number (including country code):",'94');
+            whatsappNumber = prompt("Please enter the WhatsApp number (including country code):", '94');
 
             // If the user cancels the prompt, exit the function
             if (!whatsappNumber) {
@@ -216,10 +218,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                     color="initial"
                                     className="receipt-address"
                                 >
-                                    <b>Order:
-                                            {sale.sale_prefix +
-                                                "/" +
-                                                sale.invoice_number}</b>
+                                    <b>Order: {receiptNo}</b>
                                 </Typography>
                             </Box>
                             <Divider
@@ -465,16 +464,16 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
 
                                         {itemDiscount !== 0 && (
                                             <TableRow
-                                                sx={{ border: "none",}}
+                                                sx={{ border: "none", }}
                                                 className="receipt-summary-row"
                                             >
                                                 <TableCell
-                                                    sx={{...styles.receiptSummaryText, paddingBottom:1}}
+                                                    sx={{...styles.receiptSummaryText, paddingBottom: 1 }}
                                                     colSpan={5}
                                                     align="center"
                                                 >
                                                     <Typography
-                                                        sx={{...styles.receiptSummaryText, border:'solid 2px', width:'100%', padding:1}}
+                                                        sx={{...styles.receiptSummaryText, border:'solid 2px', width: '100%', padding: 1 }}
                                                         color="initial"
                                                     >
                                                         Item Discount: {numeral(itemDiscount).format("0,0.00")}
@@ -570,7 +569,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                             className="receipt-summary-row"
                                         >
                                             <TableCell
-                                                sx={{...styles.receiptSummaryText, paddingBottom:2}}
+                                                sx={{ ...styles.receiptSummaryText, paddingBottom: 2 }}
                                                 colSpan={4}
                                                 align="right"
                                             >
@@ -584,7 +583,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                 </Typography>
                                             </TableCell>
                                             <TableCell
-                                                sx={{...styles.receiptSummaryText, paddingBottom:2}}
+                                                sx={{ ...styles.receiptSummaryText, paddingBottom: 2 }}
                                                 align="right"
                                             >
                                                 <Typography
@@ -600,7 +599,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                 </Typography>
                                             </TableCell>
                                         </TableRow>
-                                        
+
                                         <TableRow
                                             sx={{ border: "none" }}
                                             className="receipt-summary-row"
@@ -746,6 +745,18 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                     </TableBody>
                                 </Table>
                             </TableContainer>
+
+                            <Divider
+                                sx={{
+                                    borderBottom: "1px dashed",
+                                    borderColor: "grey.700",
+                                    my: "1rem",
+                                }}
+                                className="receipt-divider-before-footer"
+                            />
+                            <div className="receipt-barcode flex justify-center">
+                                <Barcode value={sale.invoice_number} />
+                            </div>
 
                             <Divider
                                 sx={{

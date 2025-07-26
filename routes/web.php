@@ -101,6 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/purchase/store', [PurchaseController::class, 'store'])->name('purchases.store');
 
     Route::post('/quantity/store', [QuantityController::class, 'store'])->name('quantity.store');
+    Route::get('/quantity/{stock_id}/log', [QuantityController::class, 'getAdjustmentsLog']);
 
     Route::post('/customer-transaction', [TransactionController::class, 'storeCustomerTransaction']);
     Route::post('/vendor-transaction', [TransactionController::class, 'storeVendorTransaction']);

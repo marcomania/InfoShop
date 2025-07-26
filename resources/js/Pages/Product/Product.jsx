@@ -15,6 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import { Link, router } from "@inertiajs/react";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
+import HistoryIcon from '@mui/icons-material/History';
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import BatchModal from "./Partials/BatchModal";
@@ -277,7 +278,7 @@ const productColumns = (handleProductEdit) => [
     {
         field: "quantity",
         headerName: "Qty",
-        width: 80,
+        width: 90,
         align: "right",
         headerAlign: "right",
         valueGetter: (value) => parseFloat(value),
@@ -306,9 +307,14 @@ const productColumns = (handleProductEdit) => [
         headerAlign: "center",
         renderCell: (params) => {
             return (
-                <Link href={`/product/${params.row.batch_id}/barcode`}>
-                    <QrCode2Icon color="primary" />
-                </Link>
+                <>
+                    <Link href={`/product/${params.row.batch_id}/barcode`}>
+                        <QrCode2Icon color="primary" />
+                    </Link>
+                    <Link href={`/quantity/${params.row.stock_id}/log`} className="ml-4">
+                        <HistoryIcon color="primary" />
+                    </Link>
+                </>
             );
         },
     },

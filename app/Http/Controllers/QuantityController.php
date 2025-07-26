@@ -54,7 +54,7 @@ class QuantityController extends Controller
             // Create a new QuantityAdjustment record
             $quantityAdjustment = new QuantityAdjustment([
                 'batch_id' => $validated['batch_id'],
-                'stock_id'=>$productStock->id,
+                'stock_id' => $productStock->id,
                 'previous_quantity' => $previousQuantity,
                 'adjusted_quantity' => $validated['quantity'],
                 'reason' => $validated['reason'],
@@ -67,7 +67,6 @@ class QuantityController extends Controller
 
             // Return success response
             return response()->json(['message' => 'Quantity adjustment and stock update successful.'], 200);
-
         } catch (\Exception $e) {
             // Rollback transaction in case of error
             DB::rollBack();
@@ -77,4 +76,17 @@ class QuantityController extends Controller
         }
     }
 
+    public function getAdjustmentsLog($stock_id)
+    {
+        $adjustments = QuantityAdjustment::where('stock_id', $stock_id)
+            ->join('product_stocks', 'quantity_adjustments.stock_id', '=', 'product_stocks.id')
+            ->join('products', 'product_stocks.product_id', '=', 'products.id')
+            ->select('quantity_adjustments.*', 'products.name')
+            ->orderBy('quantity_adjustments.created_at', 'desc')
+            ->get();
+        return Inertia::render('Product/QuantityAdjustmentsLog', [
+            'adjustments' => $adjustments,
+            'pageLabel' => 'Quantity Adjustments Log',
+        ]);
+    }
 }
