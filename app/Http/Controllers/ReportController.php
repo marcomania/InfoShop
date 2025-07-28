@@ -37,10 +37,11 @@ class ReportController extends Controller
             $users = User::where('user_role', '!=', 'super-admin')->select('id', 'name')->get();
         }
 
-        $cashLogs = CashLog::where('cash_logs.transaction_date', $transaction_date)
-            ->select(
+        //$cashLogs = CashLog::where('cash_logs.transaction_date', $transaction_date)
+        $cashLogsQuery = DB::table('cash_logs')
+            ->select([
                 'cash_logs.transaction_date',
-                'description',
+                DB::raw('IF(cash_logs.source = "sales", NULL, cash_logs.description) AS description'),
                 'cash_logs.amount',
                 'cash_logs.source',
                 'contacts.name',
@@ -53,8 +54,12 @@ class ReportController extends Controller
                         WHEN cash_logs.source = "purchases" THEN purchase_transactions.transaction_type 
                         ELSE NULL 
                     END AS transaction_type
-                ')
-            )
+                '),
+                DB::raw("'Cash' AS payment_method"),
+                DB::raw('CASE WHEN cash_logs.source = "sales" THEN transactions.created_at
+                              ELSE cash_logs.created_at
+                         END AS created_at')
+            ])
             ->leftJoin('contacts', 'cash_logs.contact_id', '=', 'contacts.id')
             ->leftJoin('transactions', function ($join) {
                 $join->on('cash_logs.reference_id', '=', 'transactions.id')
@@ -63,29 +68,80 @@ class ReportController extends Controller
             ->leftJoin('purchase_transactions', function ($join) {
                 $join->on('cash_logs.reference_id', '=', 'purchase_transactions.id')
                     ->where('cash_logs.source', '=', 'purchases');
-            });
+            })
+            ->where('cash_logs.transaction_date', $transaction_date)
+            ->whereNull('cash_logs.deleted_at');
+
+        $cardTransactionsQuery = DB::table('transactions')
+            ->select([
+                'transactions.transaction_date',
+                'transactions.note AS description',
+                'transactions.amount',
+                DB::raw("'sales' AS source"),
+                'contacts.name',
+                'transactions.sales_id',
+                'transactions.amount AS cash_in',
+                DB::raw('0 AS cash_out'),
+                'transactions.transaction_type',
+                'transactions.payment_method',
+                'transactions.created_at'
+            ])
+            ->leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
+            ->where('transactions.transaction_date', $transaction_date)
+            ->where('transactions.payment_method', 'Card')
+            ->whereNull('transactions.deleted_at');
 
         if (isset($user) && $user !== 'All') {
-            $cashLogs = $cashLogs->where('cash_logs.created_by', $user);
+            $cashLogsQuery = $cashLogsQuery->where('cash_logs.created_by', $user);
+            $cardTransactionsQuery->where('transactions.created_by', $user);
         }
 
         if(isset($store_id) && $store_id !== 'All') {
-            $cashLogs = $cashLogs->where('cash_logs.store_id', $store_id);
+            $cashLogsQuery = $cashLogsQuery->where('cash_logs.store_id', $store_id);
+            $cardTransactionsQuery->where('transactions.store_id', $store_id);
         }
 
         if (Auth::user()->user_role === 'admin' || Auth::user()->user_role === 'super-admin') {
             
         } else {
             if(!isset($store_id)) {
-                $cashLogs = $cashLogs->where('cash_logs.store_id', Auth::user()->store_id);
+                $cashLogsQuery = $cashLogsQuery->where('cash_logs.store_id', Auth::user()->store_id);
+                $cardTransactionsQuery->where('transactions.store_id', Auth::user()->store_id);
             }
         }
+        $finalQuery = $cashLogsQuery->unionAll($cardTransactionsQuery);
 
+        // Ejecución (opcionalmente puedes usar ->get() para ejecutar y obtener los resultados)
+        $results = DB::table(DB::raw("({$finalQuery->toSql()}) as sub"))
+            ->mergeBindings($finalQuery)
+            ->selectRaw("
+                sub.transaction_date,
+                sub.description,
+                sub.source,
+                sub.name,
+                sub.sales_id,
+                sub.transaction_type,
+                SUM(sub.amount) as amount,
+                SUM((sub.payment_method = 'Cash') * CAST(sub.cash_in AS DECIMAL(10,2))) AS total_cash,
+                SUM((sub.payment_method = 'Card') * CAST(sub.cash_in AS DECIMAL(10,2))) AS total_card,
+                SUM(sub.cash_out) AS cash_out,
+                MAX(sub.created_at) as created_at
+            ")
+            ->groupBy(
+                'sub.transaction_date',
+                'sub.description',
+                'sub.source',
+                'sub.name',
+                'sub.sales_id',
+                'sub.transaction_type'
+            )
+            ->orderBy('created_at')
+            ->get();
 
-        $cashLogs = $cashLogs->get();
+        //$cashLogs = $cashLogs->get();
         return Inertia::render('Report/DailyCashReport', [
             'stores' => $stores,
-            'logs' => $cashLogs,
+            'logs' => $results,
             'users' => $users,
             'pageLabel' => 'Daily Cash Report',
         ]);

@@ -88,7 +88,9 @@ export default function DailyReport({ logs, stores, users }) {
         });
     }
 
-    const totalCashIn = dataLogs.reduce((sum, row) => sum + parseFloat(row.cash_in), 0);
+    const totalCashIn = dataLogs.reduce((sum, row) => sum + parseFloat(row.total_cash)+parseFloat(row.total_card), 0);
+    const totalCashInCash = dataLogs.reduce((sum, row) => sum + parseFloat(row.total_cash), 0);
+    const totalCashInCard = dataLogs.reduce((sum, row) => sum + parseFloat(row.total_card), 0);
     const totalCashOut = dataLogs.reduce((sum, row) => sum + parseFloat(row.cash_out), 0);
 
     return (
@@ -209,6 +211,9 @@ export default function DailyReport({ logs, stores, users }) {
                                         CASH IN
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
+                                        YAPE
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
                                         CASH OUT
                                     </StyledTableCell>
                                 </TableRow>
@@ -240,7 +245,10 @@ export default function DailyReport({ logs, stores, users }) {
                                             }
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
-                                            {row.cash_in == 0 ? '-' : numeral(row.cash_in).format('0,0.00')}
+                                            {row.total_cash == 0  ? '-' : numeral(row.total_cash).format('0,0.00')}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            {row.total_card == 0  ? '-' : numeral(row.total_card).format('0,0.00')}
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             {row.cash_out == 0 ? '-' : numeral(row.cash_out).format('0,0.00')}
@@ -251,15 +259,32 @@ export default function DailyReport({ logs, stores, users }) {
                                 {/* Add Total Row */}
                                 <StyledTableRow>
                                     <StyledTableCell colSpan={3} align="right">
-                                        <strong>Total:</strong>
+                                        <strong>SubTotal:</strong>
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
+                                        <strong>{numeral(totalCashInCash).format('0,0.00')}</strong>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        <strong>{numeral(totalCashInCard).format('0,0.00')}</strong>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        
+                                    </StyledTableCell>
+                                </StyledTableRow>
+
+                                <StyledTableRow>
+                                    <StyledTableCell colSpan={3} align="right">
+                                        <strong>Total:</strong>
+                                    </StyledTableCell>
+                                    <StyledTableCell colSpan={2} align="right">
                                         <strong>{numeral(totalCashIn).format('0,0.00')}</strong>
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         <strong>{numeral(totalCashOut).format('0,0.00')}</strong>
                                     </StyledTableCell>
                                 </StyledTableRow>
+
+
 
                                 <StyledTableRow>
                                     <StyledTableCell colSpan={5} align="right">
@@ -269,7 +294,7 @@ export default function DailyReport({ logs, stores, users }) {
 
                                 {/* Row for displaying the total sum */}
                                 <StyledTableRow>
-                                    <StyledTableCell colSpan={4} align="right">
+                                    <StyledTableCell colSpan={5} align="right">
                                         <Typography variant="h5" color="initial">
                                             <strong>Balance:</strong>
                                         </Typography>
