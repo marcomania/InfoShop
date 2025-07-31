@@ -51,7 +51,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
         }
 
         // Construct the WhatsApp URL
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(getReceiptWhatsappAscii())}`;
         window.open(whatsappUrl, '_blank'); // Open in a new tab
     };
 
@@ -138,6 +138,61 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
     }
 
     const itemDiscount = salesItems.reduce((acc, item) => acc + item.discount * item.quantity, 0);
+
+    function getReceiptWhatsappAscii() {
+        const lineWidth = 42;
+        const formatLine = (qty, name, total) => {
+            const qtyNum = Number(qty);
+            const totalNum = Number(total);
+
+            return (
+                qtyNum.toFixed(3).padStart(6) + " | " +
+                name.padEnd(20).slice(0, 20) + " | " +
+                totalNum.toFixed(2).padStart(7)
+            );
+        };
+
+        const lines =salesItems.map(item => {
+            const itemTotal = numeral(parseFloat(item.quantity) * (item.unit_price - item.discount)).format("0,0.00")
+            return formatLine(item.quantity, item.name, itemTotal);
+        });
+
+        const total = Number(sale.total_amount);
+        const recibido = parseFloat(sale.amount_received || 0);
+        const deuda = Math.max(total - recibido, 0);
+        
+        const rightAlign = (label, value) => {
+            const text = `${label}: ${value.toFixed(2)}`;
+            return text.padStart(lineWidth);
+        };
+
+        const centerText = (text) => {
+            const totalPad = lineWidth - text.length;
+            const padLeft = Math.floor(totalPad / 2);
+            const padRight = totalPad - padLeft;
+            return " ".repeat(padLeft) + text + " ".repeat(padRight);
+        };
+
+        const asciiTable = [
+            "```",
+            centerText(`*${settings.shop_name}*`),
+            "------------------------------------------",
+            `RUC: 10082646341`,
+            `Order: ${receiptNo}`,
+            `Date: ${dayjs(sale.created_at).format("DD-MMM-YYYY, h:mm A")}`,
+            "------------------------------------------",
+            " Cant  | Producto             |  Total",
+            "------------------------------------------",
+            ...lines,
+            "------------------------------------------",
+            rightAlign("Total", total),
+            rightAlign("Recibido", recibido),
+            deuda > 0 ? rightAlign("Deuda", deuda) : null,
+            "```",
+        ].join("\n");
+
+        return asciiTable;
+    }
 
     return (
         <>
