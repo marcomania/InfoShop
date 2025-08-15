@@ -19,7 +19,7 @@ import { SharedContext } from "@/Context/SharedContext";
 import { usePage, Link } from "@inertiajs/react";
 
 import HeldItemsModal from "./HeldItemsModal";
-import PaymentsCheckoutDialog from "@/Components/PaymentsCheckoutDialog";
+import PaymentsCheckoutDialog from "@/components/PaymentsCheckoutDialog";
 import QuotationDialog from "./QuotationDialog";
 import CashCheckoutDialog from "./CashCheckoutDialog";
 

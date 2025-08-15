@@ -10,7 +10,7 @@ import numeral from "numeral";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
-import CustomPagination from "@/Components/CustomPagination";
+import CustomPagination from "@/components/CustomPagination";
 
 const columns = (handleRowClick) => [
     {

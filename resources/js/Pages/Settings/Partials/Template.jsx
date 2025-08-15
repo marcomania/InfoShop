@@ -3,7 +3,7 @@ import { Box, Button, Grid, Paper, TextField, MenuItem } from '@mui/material';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import TinyMCEEditor from '@/Components/TinyMCEEditor';
+import TinyMCEEditor from '@/components/TinyMCEEditor';
 
 const Template = () => {
     const [templateContent, setTemplateContent] = useState('');

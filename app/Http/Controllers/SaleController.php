@@ -61,8 +61,12 @@ class SaleController extends Controller
         //     $filters['end_date'] = $filters['end_date'] ?? $today;
         // }
 
-        if (($filters['status'] ?? null) !== 'pending' && isset($filters['start_date']) && isset($filters['end_date'])) {
-            $query->whereBetween('sale_date', [$filters['start_date'], $filters['end_date']]);
+        if (isset($filters['start_date'])) {
+            $query->where('sale_date', '>=', $filters['start_date']);
+        }
+
+        if (isset($filters['end_date'])) {
+            $query->where('sale_date', '<=', $filters['end_date']);
         }
 
         if (isset($filters['query'])) {
@@ -84,7 +88,7 @@ class SaleController extends Controller
         return Inertia::render('Sale/Sale', [
             'sales' => $sales,
             'contacts' => $contacts,
-            'pageLabel' => 'Sales',
+            'pageLabel' => 'Ventas',
         ]);
     }
 

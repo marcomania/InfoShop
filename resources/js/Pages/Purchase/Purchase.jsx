@@ -21,9 +21,9 @@ import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import dayjs from "dayjs";
 import Select2 from "react-select";
 import numeral from "numeral";
-import AddPaymentDialog from "@/Components/AddPaymentDialog";
-import ViewDetailsDialog from "@/Components/ViewDetailsDialog";
-import CustomPagination from "@/Components/CustomPagination";
+import AddPaymentDialog from "@/components/AddPaymentDialog";
+import ViewDetailsDialog from "@/components/ViewDetailsDialog";
+import CustomPagination from "@/components/CustomPagination";
 
 const columns = (handleRowClick) => [
     { field: "id", headerName: "ID", width: 80 },

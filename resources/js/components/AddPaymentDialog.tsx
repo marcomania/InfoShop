@@ -1,30 +1,90 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, { useEffect, useRef } from "react";
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+
 import {
-    IconButton,
-    TextField,
-    Grid,
-    Divider,
-    MenuItem,
-    Button,
     Dialog,
-    DialogActions,
     DialogContent,
+    DialogDescription,
+    DialogHeader,
     DialogTitle,
-    InputAdornment
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
-import Swal from "sweetalert2";
+    DialogFooter,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
 import dayjs from "dayjs";
 import { usePage } from "@inertiajs/react";
+import { Button } from "@/components/ui/button";
+import { Loader2Icon } from "lucide-react"
+import { CurrencyInput } from "./ui/currency-input";
+import { SharedData } from '@/types';
+import { useTransactionMutation } from "@/hooks/useTransactionMutation";
+import { DateSelector } from "./ui/date-selector";
+import { Textarea } from "./ui/textarea";
+import { Separator } from "./ui/separator";
 
-const initialPaymentFormState = {
-    amount: 0,
-    payment_method: 'Cash',
-    transaction_date: dayjs().format("YYYY-MM-DD"), // Today's date in 'YYYY-MM-DD' format
-    note: '',
-    store_id: 1,
-};
+const formSchema = z.object({
+    amount: z.number(),
+    payment_method: z.enum(['Cash', 'Cheque', 'Card', 'Bank', 'Account Balance']),
+    transaction_date: z.date(),
+    note: z.string(),
+    store_id: z.number(),
+    contact_id: z.number(),
+    transaction_id: z.number().nullable(),
+})
+
+interface SelectedTransaction {
+    id: number;
+    contact_id: number;
+    sale_date: string;
+    total_amount: string;
+    discount: string;
+    amount_received: string;
+    profit_amount: string;
+    status: string;
+    payment_status: string;
+    name: string;
+    balance: string;
+    store_id: number;
+    invoice_number: string;
+    sale_type: string;
+    created_at: string;
+}
+interface Store {
+    id: number;
+    name: string;
+}
+
+interface AddPaymentDialogProps {
+    open: boolean;
+    setOpen: (open: boolean) => void;
+    selectedContact: number;
+    selectedTransaction: SelectedTransaction | null;
+    amountLimit?: number;
+    is_customer?: boolean;
+    stores: Store[] | null;
+    refreshTable: (url: string) => void;
+}
 
 export default function AddPaymentDialog({
     open,
@@ -35,243 +95,252 @@ export default function AddPaymentDialog({
     is_customer = false,
     stores = null,
     refreshTable
-}) {
-    const [loading, setLoading] = useState(false);
-    const [paymentForm, setPaymentFormState] = useState(initialPaymentFormState);
-    const currency_symbol = usePage().props.settings.currency_symbol;
+}: AddPaymentDialogProps) {
+    const { currency_symbol } = usePage<SharedData>().props.settings;
+    const submitterRef = useRef<string | null>(null);
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            amount: 0,
+            payment_method: 'Cash',
+            transaction_date: dayjs().toDate(),
+            note: "",
+            store_id: 1,
+            contact_id: 0,
+            transaction_id: null,
+        },
+        mode: "onSubmit",
+    })
+
+    useEffect(() => {
+        const defaultStoreId =
+            selectedTransaction?.store_id ??
+            (stores && stores.length > 0 ? stores[0].id : 1);
+        console.log ("Params", selectedTransaction, selectedContact, defaultStoreId, amountLimit);
+        form.reset({
+            amount: amountLimit ?? 0,
+            payment_method: 'Cash',
+            transaction_date: dayjs().toDate(),
+            note: "",
+            store_id: defaultStoreId,
+            contact_id: selectedContact,
+            transaction_id: selectedTransaction?.id ?? null,
+        });
+
+    }, [selectedTransaction, selectedContact, stores]);
+
+    const amount = form.watch("amount");
+    const payment_method = form.watch("payment_method");
 
     const getButtonText = () => {
-        if (loading) {
-            return 'Loading...';
-        }
-        if (paymentForm.payment_method === 'Cash' || paymentForm.payment_method === 'Cheque') {
-            return paymentForm.amount < 0 ? 'REFUND' : 'PAY';
-        }
-        if (paymentForm.payment_method === 'Account Balance') {
-            return paymentForm.amount < 0 ? 'CREDIT' : 'UPDATE BALANCE';
-        }
-        return 'ADD PAYMENT'; // Default text
+        const paymentLogicMap: Record<string, (amount: number) => string> = {
+            Cash: (amount) => (amount < 0 ? 'REFUND' : 'PAY'),
+            Cheque: (amount) => (amount < 0 ? 'REFUND' : 'PAY'),
+            'Account Balance': (amount) => (amount < 0 ? 'CREDIT' : 'UPDATE BALANCE'),
+        };
+
+        return paymentLogicMap[payment_method]?.(amount) ?? 'ADD PAYMENT';
     };
 
-    const handleClose = () => {
-        setPaymentFormState(initialPaymentFormState)
-        setOpen(false);
-    };
+    const { mutate, isPending } = useTransactionMutation(is_customer);
 
-    const handleFieldChange = (event) => {
-        const { name, value } = event.target;
-        setPaymentFormState({
-            ...paymentForm,
-            [name]: value,
+    useEffect(() => {
+        if (!open) {
+            submitterRef.current = null; // Reset the submitter when dialog is closed
+            form.reset();
+        }
+    }, [open]);
+
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        const formattedValues = {
+            ...values,
+            transaction_date: dayjs(values.transaction_date).format("YYYY-MM-DD"),
+        };
+
+        const action = submitterRef.current;
+        if (action === "credit") {
+            formattedValues.amount = -Math.abs(formattedValues.amount);
+        }
+
+        mutate(formattedValues, {
+            onSuccess: () => {
+                refreshTable(window.location.pathname);
+                setOpen(false);
+            }
         });
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-
-        if (loading) return;
-        setLoading(true);
-
-        const submittedFormData = new FormData(event.currentTarget);
-        let formJson = Object.fromEntries(submittedFormData.entries());
-        formJson.contact_id = selectedContact
-
-        const submitter = event.nativeEvent.submitter.name;
-        if(submitter=='credit') formJson.amount = -Math.abs(paymentForm.amount)
-
-        if (selectedTransaction !== null) {
-            formJson.transaction_id = selectedTransaction.id
-            formJson.store_id = selectedTransaction.store_id
-        }
-
-        let url = '/customer-transaction';
-        if (!is_customer) url = "/vendor-transaction"
-
-        axios
-            .post(url, formJson)
-            .then((resp) => {
-                Swal.fire({
-                    title: "Success!",
-                    text: resp.data.message,
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                });
-                refreshTable(window.location.pathname)
-                handleClose()
-            })
-            .catch((error) => {
-                Swal.fire({
-                    title: "Failed!",
-                    text: error.response.data.error,
-                    icon: "error",
-                    showConfirmButton: true,
-                });
-                console.log(error);
-            }).finally(() => {
-                setLoading(false); // Reset submitting state
-            });
-    };
+    }
 
     return (
         <React.Fragment>
-            <Dialog
-                fullWidth={true}
-                maxWidth={"sm"}
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                PaperProps={{
-                    component: "form",
-                    onSubmit: handleSubmit,
-                }}
-            >
-                <DialogTitle id="alert-dialog-title">ADD PAYMENTS</DialogTitle>
-                <IconButton
-                    aria-label="close"
-                    onClick={handleClose}
-                    sx={(theme) => ({
-                        position: "absolute",
-                        right: 8,
-                        top: 8,
-                        color: theme.palette.grey[500],
-                    })}
-                >
-                    <CloseIcon />
-                </IconButton>
-                <DialogContent>
-                    <Grid container spacing={2}>
-                        <Grid size={{ xs: 12, sm: 4 }}>
-                            <TextField
-                                fullWidth
-                                type="number"
-                                name="amount"
-                                label="Amount"
-                                variant="outlined"
-                                autoFocus
-                                sx={{ input: { fontWeight: 'bold' } }}
-                                value={paymentForm.amount}
-                                onChange={handleFieldChange}
-                                onFocus={(event) => {
-                                    event.target.select();
-                                }}
-                                slotProps={{
-                                    inputLabel: {
-                                        shrink: true,
-                                    },
-                                    input: {
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                {currency_symbol}
-                                            </InputAdornment>
-                                        ),
-                                    },
-                                }}
-                            />
-                        </Grid>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="max-w-lg" >
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(
+                            onSubmit,
+                            (errors) => {
+                                console.log("❌ Form validation errors:", errors);
+                            }
+                        )} className="space-y-8">
+                            <DialogHeader>
+                                <DialogTitle>ADD PAYMENTS</DialogTitle>
+                                <DialogDescription>
+                                    Completa los detalles para agregar el nuevo pago.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 items-start">
+                                <FormField
+                                    control={form.control}
+                                    name="amount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Amount</FormLabel>
+                                            <FormControl>
+                                                <CurrencyInput
+                                                    {...field}
+                                                    id="amount"
+                                                    placeholder="0.00"
+                                                    className=""
+                                                    currency={currency_symbol}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                        <Grid size={{ xs: 12, sm: 4 }}>
-                                <TextField
+                                <FormField
+                                    control={form.control}
                                     name="payment_method"
-                                    value={paymentForm.payment_method}
-                                    onChange={handleFieldChange}
-                                    label="Payment Method"
-                                    select
-                                    fullWidth
-                                >
-                                    <MenuItem value={'Cash'}>Cash</MenuItem>
-                                    <MenuItem value={'Cheque'}>Cheque</MenuItem>
-                                    <MenuItem value={'Card'}>Card</MenuItem>
-                                    <MenuItem value={'Bank'}>Bank</MenuItem>
-                                    {selectedTransaction === null && (
-                                        <MenuItem value={'Account Balance'}>Account Balance</MenuItem>
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Payment Method</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue placeholder="Theme" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Cash">Cash</SelectItem>
+                                                    <SelectItem value="Cheque">Cheque</SelectItem>
+                                                    <SelectItem value="Card">Card</SelectItem>
+                                                    <SelectItem value="Bank">Bank</SelectItem>
+                                                    {selectedTransaction === null && (
+                                                        <SelectItem value="Account Balance">Account Balance</SelectItem>
+                                                    )}
+                                                    {selectedTransaction !== null && (
+                                                        <SelectItem value="Account">Account</SelectItem>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
                                     )}
-                                    {selectedTransaction !== null && (
-                                        <MenuItem value={'Account'}>Account</MenuItem>
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="transaction_date"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Fecha de inicio</FormLabel>
+                                            <FormControl>
+                                                <DateSelector
+                                                    {...field}
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    placeholder="dd/mm/aaaa"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
                                     )}
-                                </TextField>
-                        </Grid>
+                                />
 
-                        <Grid size={{ xs: 12, sm: 4 }}>
-                            <TextField
-                                label="Date"
-                                name="transaction_date"
-                                fullWidth
-                                type="date"
-                                slotProps={{
-                                    inputLabel: {
-                                        shrink: true,
-                                    },
-                                }}
-                                value={paymentForm.transaction_date}
-                                onChange={handleFieldChange}
-                                required
-                            />
-                        </Grid>
-
-                        {(selectedTransaction === null || amountLimit === undefined) && (
-                            <Grid size={{ xs: 12, sm: 12 }}>
-                                    <TextField
-                                        value={paymentForm.store_id}
-                                        label="Store"
-                                        onChange={handleFieldChange}
-                                        required
+                                {(selectedTransaction === null || amountLimit === undefined) && (
+                                    <FormField
+                                        control={form.control}
                                         name="store_id"
-                                        select
-                                        fullWidth
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Store</FormLabel>
+                                                <Select
+                                                    onValueChange={(value) => {
+                                                        field.onChange(Number(value));
+                                                    }}
+                                                    value={String(field.value)}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select Store" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {stores?.map((store) => (
+                                                            <SelectItem key={store.id} value={String(store.id)} >
+                                                                {store.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+                            </div>
+                            <Separator className="my-4" />
+                            <div className="grid grid-cols-1">
+                                <FormField
+                                    control={form.control}
+                                    name="note"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea {...field} placeholder="Note" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <DialogFooter>
+                                <Button
+                                    variant={"default"}
+                                    size={"lg"}
+                                    className="flex-1"
+                                    disabled={amount === 0 || (amountLimit !== undefined && amount > amountLimit) || isPending}
+                                    color={amount < 0 ? "secondary" : "primary"}
+                                    type="submit"
+                                    onClick={() => (submitterRef.current = "pay")}
+                                >
+                                    {isPending ? (
+                                        <span className="flex items-center">
+                                            <Loader2Icon className="animate-spin mr-2" /> Loading...
+                                        </span>
+                                    ) : (
+                                        getButtonText()
+                                    )}
+                                </Button>
+                                {(selectedTransaction === null && amount >= 0) && (
+                                    <Button
+                                        variant={"default"}
+                                        size={"lg"}
+                                        className="flex-1"
+                                        color={"error"}
+                                        type="submit"
+                                        disabled={amount == 0 || (amountLimit !== undefined && amount > amountLimit) || isPending}
+                                        onClick={() => (submitterRef.current = "credit")}
                                     >
-                                        {stores?.map((store) => (
-                                            <MenuItem key={store.id} value={store.id}>
-                                                {store.name}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                            </Grid>
-                        )}
-                    </Grid>
-
-                    <Divider sx={{ py: '0.5rem' }}></Divider>
-
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        label={"Note"}
-                        name="note"
-                        multiline
-                        sx={{ mt: "1rem" }}
-                        value={paymentForm.note}
-                        onChange={handleFieldChange}
-                    />
+                                        {isPending ? 'Loading...' : (payment_method === 'Cash' || payment_method === 'Cheque' ? 'REFUND' : 'CREDIT')}
+                                    </Button>
+                                )}
+                            </DialogFooter>
+                        </form>
+                    </Form>
                 </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{ paddingY: "15px", fontSize: "1.5rem" }}
-                        type="submit"
-                        color={paymentForm.amount < 0 ? "error" : "primary"}
-                        disabled={paymentForm.amount == 0 || (amountLimit !== undefined && paymentForm.amount > amountLimit) || loading}
-                    >
-                        {/* {loading ? 'Loading...' : 'ADD PAYMENT'} */}
-                        {getButtonText()}
-                    </Button>
-
-                    {(selectedTransaction === null && paymentForm.amount >= 0) && (
-                        <Button
-                            variant="contained"
-                            fullWidth
-                            sx={{ paddingY: "15px", fontSize: "1.5rem" }}
-                            type="submit"
-                            color={"error"}
-                            name={"credit"}
-                            value={'credit'}
-                            disabled={paymentForm.amount == 0 || (amountLimit !== undefined && paymentForm.amount > amountLimit) || loading}
-                        >
-                            {loading ? 'Loading...' : (paymentForm.payment_method === 'Cash' || paymentForm.payment_method === 'Cheque' ? 'REFUND' : 'CREDIT')}
-                        </Button>
-                    )}
-                </DialogActions>
             </Dialog>
         </React.Fragment>
     );

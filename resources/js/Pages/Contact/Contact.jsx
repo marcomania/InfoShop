@@ -11,8 +11,8 @@ import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import numeral from 'numeral';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import FormDialog from './Partial/FormDialog';
-import CustomPagination from '@/Components/CustomPagination';
-import AddPaymentDialog from '@/Components/AddPaymentDialog';
+import CustomPagination from '@/components/CustomPagination';
+import AddPaymentDialog from '@/components/AddPaymentDialog';
 import PaymentsIcon from "@mui/icons-material/Payments";
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 

@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import numeral from "numeral";
 
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import CustomPagination from "@/Components/CustomPagination";
+import CustomPagination from "@/components/CustomPagination";
 import ReloadFormDialog from "./ReloadFormDialog";
 
 const columns = (handleRowClick) => [

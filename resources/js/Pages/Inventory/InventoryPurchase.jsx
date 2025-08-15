@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 import Swal from "sweetalert2";
 import axios from "axios";
 import numeral from "numeral";
-import CustomPagination from "@/Components/CustomPagination";
+import CustomPagination from "@/components/CustomPagination";
 import InventoryItemDialog from "./Partials/InventoryItemDialog";
 
 const InventoryPurchase = ({ inventory_items, stores }) => {

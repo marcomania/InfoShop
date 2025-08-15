@@ -19,7 +19,7 @@ import axios from "axios";
 import numeral from "numeral";
 
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import CustomPagination from "@/Components/CustomPagination";
+import CustomPagination from "@/components/CustomPagination";
 
 const columns = (handleRowClick) => [
     { field: 'id', headerName: 'ID', width: 90 },

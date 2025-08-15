@@ -19,8 +19,8 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Swal from "sweetalert2";
 
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import CustomPagination from "@/Components/CustomPagination";
-import ViewDetailsDialog from "@/Components/ViewDetailsDialog";
+import CustomPagination from "@/components/CustomPagination";
+import ViewDetailsDialog from "@/components/ViewDetailsDialog";
 
 const columns = (handleRowClick) => [
     {

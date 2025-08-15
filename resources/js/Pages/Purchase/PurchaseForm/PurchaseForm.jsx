@@ -24,7 +24,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ContactFormModal from "@/Pages/Contact/Partial/FormDialog";
 import ProductSearch from "./ProductSearch";
 import PurchaseCartItems from "./PurchaseCartItems";
-import PaymentsCheckoutDialog from "@/Components/PaymentsCheckoutDialog";
+import PaymentsCheckoutDialog from "@/components/PaymentsCheckoutDialog";
 import PurchaseAppBar from "./PurchaseAppBar";
 import dayjs from 'dayjs';
 

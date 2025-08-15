@@ -65,6 +65,9 @@ class TransactionController extends Controller
                     if ($sale->amount_received >= $sale->total_amount) {
                         $sale->status = 'completed';
                         $sale->payment_status = 'completed';
+                    } else {
+                        $sale->status = 'pending';
+                        $sale->payment_status = 'pending';
                     }
 
                     // Save the changes to the Sale record

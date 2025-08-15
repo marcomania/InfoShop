@@ -1,37 +1,37 @@
 import './bootstrap';
 import '../css/app.css';
 
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { PurchaseProvider } from './Context/PurchaseContext';
 import { SharedProvider } from './Context/SharedContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Toaster } from "@/components/ui/sonner"
 
 const appName = import.meta.env.VITE_APP_NAME || 'InfoShop';
-
-import { InertiaProgress } from '@inertiajs/progress';
+const queryClient = new QueryClient();
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
-
-InertiaProgress.init({
-  color:'#0a0a0a',
-  includeCSS: true,
-  showSpinner: true,
-})
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
     setup({ el, App, props }) {
-        const root = createRoot(el);
-
-        root.render(
-            <PurchaseProvider>
-                <SharedProvider>
-                    <App {...props} />
-                </SharedProvider>
-            </PurchaseProvider>
+        const appElement = (
+            <QueryClientProvider client={queryClient}>
+                <PurchaseProvider>
+                    <SharedProvider>
+                        <App {...props} />
+                        <Toaster richColors position="bottom-right" />
+                    </SharedProvider>
+                </PurchaseProvider>
+                <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
         );
+
+        createRoot(el).render(appElement);
     },
     // progress: {
     //     color: '#00c455',
