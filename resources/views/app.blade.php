@@ -13,7 +13,7 @@
         <!-- Scripts -->
         @routes
         @viteReactRefresh
-        @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
+        @vite(['resources/js/app.tsx', "resources/js/Pages/{$page['component']}.jsx"])
         @inertiaHead
 
         <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
