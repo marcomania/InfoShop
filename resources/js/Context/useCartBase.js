@@ -44,21 +44,17 @@ const cartReducer = (state, action) => {
 
     case 'UPDATE_CART_ITEM': {
       const cart = [...state];
-      let existingProductIndex = action.payload.cart_index;
-      if (action.payload.product_type != 'reload' && action.payload.product_type != "custom") {
+      let existingProductIndex = action.payload.cart_index ?? -1;
+      /*if (action.payload.product_type != 'reload' && action.payload.product_type != "custom") {
         existingProductIndex = cart.findIndex(
           (item) =>
             item.id === action.payload.id &&
             item.batch_number === action.payload.batch_number
         );
-      }
+      }*/
       
       if (existingProductIndex !== -1) {
-        const updatedItem = {
-          ...cart[existingProductIndex],
-          ...action.payload,
-          quantity: cart[existingProductIndex].quantity + action.payload.quantity,
-        };
+        const updatedItem = { ...action.payload };
 
         cart[existingProductIndex] = updatedItem;
 
@@ -66,6 +62,11 @@ const cartReducer = (state, action) => {
         if (updatedItem.quantity == 0) {
           cart.splice(existingProductIndex, 1);
         }
+      } else {
+        cart.push({
+          ...action.payload,
+          quantity: action.payload.quantity ?? 1,
+        });
       }
 
       return cart;

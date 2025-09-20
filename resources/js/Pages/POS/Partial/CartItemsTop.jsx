@@ -12,6 +12,8 @@ export default function CartItemsTop({ customers }) {
   const [customerList, setCustomerList] = useState(customers)
   const { selectedCustomer, setSelectedCustomer, saleDate, setSaleDate } = useContext(SharedContext);
 
+  const today = new Date().toLocaleDateString("en-CA");
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -33,12 +35,6 @@ export default function CartItemsTop({ customers }) {
     });
   };
 
-  useEffect(() => {
-    if (!selectedCustomer && customerList?.length > 0) {
-      setSelectedCustomer(null); 
-    }
-  }, [customerList]); 
-
   return (
     <Grid sx={{ width: '100%', marginY: { xs: '1rem', sm: '1.2rem' }, alignItems: 'center', justifyContent:'space-between' }} container spacing={2} flexDirection={{ xs: 'column-reverse', sm: 'row' }} alignItems={'center'}>
       <Tooltip
@@ -52,7 +48,6 @@ export default function CartItemsTop({ customers }) {
         }}
         >
       <Grid size={{ xs: 12, sm: 4 }} width={'100%'}>
-        
           <TextField
             label="Fecha"
             name="sale_date"
@@ -69,8 +64,13 @@ export default function CartItemsTop({ customers }) {
             error={!saleDate}
             required
             size='small'
+            color={saleDate && saleDate !== today ? "warning" : "primary"} 
+            sx={{
+              "& .MuiInputBase-root": {
+                backgroundColor: saleDate && saleDate !== today ? "#fff3cd" : "inherit", // amarillo suave
+              },
+            }}
           />
-        
       </Grid>
       </Tooltip>
 

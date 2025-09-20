@@ -26,6 +26,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { usePage } from "@inertiajs/react";
 import { SharedContext } from "@/Context/SharedContext";
+import { toast } from "sonner";
 
 export default function PaymentsCheckoutDialog({
     useCart,
@@ -43,20 +44,11 @@ export default function PaymentsCheckoutDialog({
     const [loading, setLoading] = useState(false);
 
     const [discount, setDiscount] = useState(0);
-    const [amount, setAmount] = useState((cartTotal - discount))
+    const [amount, setAmount] = useState(0);
     const [payments, setPayments] = useState([])
     const [amountReceived, setAmountReceived] = useState(0)
 
     const { setSelectedCustomer } = useContext(SharedContext);
-
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const openPayment = Boolean(anchorEl);
-    const handlePaymentClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handlePaymentClose = () => {
-        setAnchorEl(null);
-    };
 
     const handleDiscountChange = (event) => {
         const inputDiscount = event.target.value;
@@ -68,19 +60,8 @@ export default function PaymentsCheckoutDialog({
     const handleClose = () => {
         setPayments([])
         setAmountReceived(0)
-        setAmount(cartTotal - discount)
         setOpen(false);
     };
-
-    useEffect(() => {
-        setAmount(cartTotal - discount);
-        setAmountReceived(payments.reduce((sum, payment) => sum + payment.amount, 0));
-        setAmount(cartTotal - discount)
-    }, [])
-
-    useEffect(() => {
-        setAmountReceived(payments.reduce((sum, payment) => sum + payment.amount, 0));
-    }, [payments])
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -144,22 +125,57 @@ export default function PaymentsCheckoutDialog({
             });
     };
 
-    // Function to handle the addition of a payment
-    const addPayment = (paymentMethod) => {
-        const netTotal = cartTotal - discount
-        const balance = amountReceived + parseFloat(amount)
-        if (netTotal < balance) {
-            alert('Payment cannot be exceeded the total amount')
+    useEffect(() => {
+        if (open) {
+            setAmountReceived(payments.reduce((sum, p) => sum + p.amount, 0));
+            setAmount(round2(cartTotal - discount - amountReceived));
         }
-        else if (amount) {
-            const newPayment = { payment_method: paymentMethod, amount: parseFloat(amount) };
-            setPayments([...payments, newPayment]);
-            const newBalance = (netTotal - balance).toFixed(2);
-            setAmount(newBalance > 0 ? newBalance : 0); // Clear the amount input after adding
-        }
-        handlePaymentClose()
+    }, [open, cartTotal, discount]);
+
+    const round2 = (num) => Math.round((num + Number.EPSILON) * 100) / 100;
+    const recalcBalance = (paymentsList) => {
+        const netTotal = cartTotal - discount;
+        const received = paymentsList.reduce((sum, p) => sum + p.amount, 0);
+        return round2(netTotal - received);
     };
 
+    useEffect(() => {
+        setAmountReceived(payments.reduce((sum, payment) => sum + payment.amount, 0));
+        setAmount(recalcBalance(payments));
+    }, [payments])
+
+    // Function to handle the addition of a payment
+    const addPayment = (paymentMethod) => {
+        const amt = parseFloat(amount);
+        if (amt > round2(cartTotal - discount - amountReceived)) {
+            toast.error("Amount exceeds remaining balance", { duration: 1000 });
+            return;
+        }
+        if ( amt == 0 ) {
+            toast.error("Amount must be greater than zero", { duration: 1000 });
+            return;
+        }
+
+        setPayments((prevPayments) => {
+            // ¿Ya existe un pago con este método?
+            const existingIndex = prevPayments.findIndex(
+                (p) => p.payment_method === paymentMethod
+            );
+
+            if (existingIndex !== -1) {
+                // Creamos copia y actualizamos el monto acumulado
+                const updatedPayments = [...prevPayments];
+                updatedPayments[existingIndex] = {
+                    ...updatedPayments[existingIndex],
+                    amount: updatedPayments[existingIndex].amount + amt,
+                };
+                return updatedPayments;
+            } else {
+                // Si no existe, agregamos un nuevo payment
+                return [...prevPayments, { payment_method: paymentMethod, amount: amt }];
+            }
+        });
+    };
 
     // Function to remove a payment
     const deletePayment = (index) => {
@@ -189,7 +205,7 @@ export default function PaymentsCheckoutDialog({
                     onSubmit: handleSubmit,
                 }}
             >
-                <DialogTitle id="alert-dialog-title">ADD PAYMENTS</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Agregar Pagos</DialogTitle>
                 <IconButton
                     aria-label="close"
                     onClick={handleClose}
@@ -336,10 +352,14 @@ export default function PaymentsCheckoutDialog({
                                     component="label"
                                     role={undefined}
                                     variant="contained"
-                                    startIcon={<FontAwesomeIcon icon={faCreditCard} size={"2xl"} />}
+                                    sx={{
+                                        backgroundColor: "#8000FF",     // morado Yape
+                                        "&:hover": { backgroundColor: "#5A00B3" }, // tono más oscuro al hover
+                                    }}
+                                    startIcon={<FontAwesomeIcon icon={faCreditCard} size={"2xl"}  />}
                                     onClick={() => addPayment('Card')}
                                 >
-                                    CARD
+                                    YAPE
                                 </Button>
                             </Grid>
                         </Grid>
@@ -356,11 +376,12 @@ export default function PaymentsCheckoutDialog({
                                         {payment.payment_method === 'Cash' && <PaymentsIcon />}
                                         {payment.payment_method === 'Cheque' && <CreditCardIcon />}
                                         {payment.payment_method === 'Credit' && <PauseCircleOutlineIcon />}
+                                        {payment.payment_method === 'Card' && <CreditCardIcon />}
 
                                     </TableCell>
 
                                     <TableCell>
-                                        <strong>{payment.payment_method}</strong>
+                                        <strong>{payment.payment_method === "Card" ? "Yape" : payment.payment_method}</strong>
                                     </TableCell>
                                     {/* Display Payment Amount */}
                                     <TableCell align="right">

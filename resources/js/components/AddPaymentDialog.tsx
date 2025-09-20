@@ -32,7 +32,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-import dayjs from "dayjs";
+import { format  } from "date-fns";
 import { usePage } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { Loader2Icon } from "lucide-react"
@@ -104,7 +104,7 @@ export default function AddPaymentDialog({
         defaultValues: {
             amount: 0,
             payment_method: 'Cash',
-            transaction_date: dayjs().toDate(),
+            transaction_date: new Date(),
             note: "",
             store_id: 1,
             contact_id: 0,
@@ -121,7 +121,7 @@ export default function AddPaymentDialog({
         form.reset({
             amount: amountLimit ?? 0,
             payment_method: 'Cash',
-            transaction_date: dayjs().toDate(),
+            transaction_date: new Date(),
             note: "",
             store_id: defaultStoreId,
             contact_id: selectedContact,
@@ -155,7 +155,7 @@ export default function AddPaymentDialog({
     function onSubmit(values: z.infer<typeof formSchema>) {
         const formattedValues = {
             ...values,
-            transaction_date: dayjs(values.transaction_date).format("YYYY-MM-DD"),
+            transaction_date: format(new Date(values.transaction_date), "yyyy-MM-dd"),
         };
 
         const action = submitterRef.current;

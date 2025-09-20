@@ -11,10 +11,13 @@ import Swal from "sweetalert2";
 import AddPaymentDialog from "@/components/AddPaymentDialog";
 import ViewDetailsDialog from "@/components/ViewDetailsDialog";
 import CustomPagination from "@/components/CustomPagination";
-import { CircleXIcon, FunnelXIcon, Package, PrinterIcon, Undo2 } from "lucide-react";
+import { CircleXIcon, FunnelXIcon, Package, PrinterIcon, Undo2, UserCircle2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PaymentSummary } from "@/components/PaymentSummary";
+import { MultiSelect } from "@/components/multi-select";
+
+import AsyncSelectExample from "./ContactSelect";
 
 const columns = (handleRowClick) => [
     {
@@ -73,7 +76,7 @@ const columns = (handleRowClick) => [
     },
     {
         field: "change",
-        headerName: "Cambio", 
+        headerName: "Cambio",
         width: 80, align: 'right', headerAlign: 'right',
         renderCell: (params) => {
             const change = params.row.amount_received - params.row.total_amount;
@@ -81,16 +84,17 @@ const columns = (handleRowClick) => [
             const colorClass = change < 0 ? 'text-red-500' : 'text-green-500';
             return (
                 <span className={colorClass}>
-                {formatted}
+                    {formatted}
                 </span>
             );
         },
     },
     // { field: 'profit_amount', headerName: 'Profit Amount', width: 120 },
-    { field: "status", headerName: "Estado", align: 'center', headerAlign: 'center', width: 120,
+    {
+        field: "status", headerName: "Estado", align: 'center', headerAlign: 'center', width: 120,
         renderCell: (params) => {
             const status = params.row.status;
-            
+
 
             if (status === "completed") {
                 return (
@@ -110,22 +114,23 @@ const columns = (handleRowClick) => [
             return null;
         },
     },
-    { field: "payment_status", headerName: "Estado Pago", width: 120,
+    {
+        field: "payment_status", headerName: "Estado Pago", width: 120,
         renderCell: (params) => {
             const payment_status = params.row.payment_status;
             const total_amount = params.row.total_amount;
             const amount_received = params.row.amount_received;
-            
+
             return (
-                <div 
+                <div
                     className="justify-center h-full cursor-pointer"
                     onClick={() => handleRowClick(params.row, "add_payment")}
                 >
                     <PaymentSummary paid={Number(amount_received)} total={Number(total_amount)} status={payment_status} />
                 </div>
             );
-            
-        }, 
+
+        },
     },
     {
         field: "sale_date",
@@ -193,6 +198,21 @@ const columns = (handleRowClick) => [
     },
 ];
 
+const getInitialSearchTerms = () => {
+    const params = new URLSearchParams(window.location.search);
+    const newparams = {
+        start_date: params.get("start_date") || "",
+        end_date: params.get("end_date") || "",
+        store: params.get("store") || 0,
+        contact_id: params.get("contact_id") || "",
+        status: params.get("status") || "all",
+        query: params.get("query") || "",
+        per_page: params.get("per_page") || 10,
+    };
+    console.log("Parametros iniciales:", newparams);
+    return newparams;
+};
+
 export default function Sale({ sales, contacts }) {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
@@ -200,17 +220,9 @@ export default function Sale({ sales, contacts }) {
     const [selectedContact, setSelectedContact] = useState(null);
     const [amountLimit, setAmountLimit] = useState(0);
     const [dataSales, setDataSales] = useState(sales);
-    const selectRef = useRef(null);
+    const multiSelectRef = useRef(null);
 
-    const [searchTerms, setSearchTerms] = useState({
-        start_date: '',
-        end_date: '',
-        store: 0,
-        contact_id: '',
-        status: 'all',
-        query: '',
-        per_page: 10,
-    });
+    const [searchTerms, setSearchTerms] = useState(getInitialSearchTerms);
 
     const handleRowClick = (sale, action) => {
         setSelectedTransaction(sale);
@@ -278,12 +290,15 @@ export default function Sale({ sales, contacts }) {
     };
 
     useEffect(() => {
+        const params = new URLSearchParams(searchTerms).toString();
+        console.log("Actualizando URL con params,", params);
+        window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
+
         refreshSales(window.location.pathname);
     }, [searchTerms]);
 
 
     const handleSearchChange = (input) => {
-
         if (input?.target) {
             // Handle regular inputs (e.g., TextField)
             const { name, value } = input.target;
@@ -306,12 +321,10 @@ export default function Sale({ sales, contacts }) {
             contact_id: '',
             status: 'all',
             query: '',
-            per_page: 100,
+            per_page: 10,
         });
-        // Limpiar el Select2
-        if (selectRef.current) {
-            selectRef.current.clearValue();
-        }
+        // Limpiar el Select de contactos
+        multiSelectRef.current?.clear();
     };
 
     return (
@@ -327,22 +340,9 @@ export default function Sale({ sales, contacts }) {
                 size={12}
             >
                 <Grid size={{ xs: 12, sm: 3 }}>
-                    <Select2
-                        ref={selectRef}
-                        className="w-full"
-                        placeholder="Elija un cliente"
-                        styles={{
-                            control: (baseStyles, state) => ({
-                                ...baseStyles,
-                                height: "55px",
-                            }),
-                        }}
-                        options={contacts} // Options to display in the dropdown
-                        onChange={(selectedOption) => handleSearchChange(selectedOption)}
-                        isClearable // Allow the user to clear the selected option
-                        getOptionLabel={(option) => option.name + ' | ' + option.balance}
-                        getOptionValue={(option) => option.id}
-                    ></Select2>
+                    <AsyncSelectExample contacts={contacts} onValueChange={(value) => {
+                        handleSearchChange({ target: { name: 'contact_id', value } });
+                    }} />
                 </Grid>
 
                 <Grid size={{ xs: 12, sm: 2 }}>

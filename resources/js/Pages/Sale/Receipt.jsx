@@ -422,6 +422,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                                 {" "}
                                                                 {index + 1}.
                                                                 {item.name}{" "}
+                                                                {item.description ? "| " + item.description : "" }
                                                                 {item.account_number
                                                                     ? "| " +
                                                                     item.account_number
@@ -429,6 +430,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                                             </strong>
                                                         </Typography>
                                                     </TableCell>
+                                                    
                                                 </TableRow>
 
                                                 <TableRow

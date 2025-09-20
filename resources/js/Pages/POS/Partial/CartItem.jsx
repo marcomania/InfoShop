@@ -37,14 +37,18 @@ export default function CartItems() {
             </ListItemAvatar>
             <ListItemText
               primary={
-                <Typography
+                <div className='flex items-center gap-1'><Typography
                   component="h5"
                   sx={{ fontWeight: 'bold', cursor:'pointer', fontSize:{sm:'1rem', xs:'0.9rem'} }}  // Makes the text bold
                   className='hover:underline'
                   onClick={()=>{setSelectedCartItem({...item, cart_index:index}); setCartItemModalOpen(true);}}
                 >
-                  {item.name}
+                  {item.name}  
                 </Typography>
+                <div className=''>
+                    {item.description && <>{" - "}{item.description.trim()}</>}
+                </div>
+                </div>
               }
               sx={{ml:'10px'}}
               secondary={

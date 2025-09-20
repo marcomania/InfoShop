@@ -23,13 +23,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class POSController extends Controller
 {
     public function getProducts($filters=[])
     {
-        $imageUrl = 'storage/';
-        if (app()->environment('production')) $imageUrl = 'public/storage/';
+        $imageUrl = Storage::url('');
+        #if (app()->environment('production')) $imageUrl = 'public/storage/';
 
         $query = Product::query();
         $query->select(
@@ -79,6 +80,7 @@ class POSController extends Controller
             'pb.discount_percentage'
         )
             ->limit(20)
+            ->orderBy('name', 'asc')
             ->get();
 
         return $products;
@@ -99,7 +101,7 @@ class POSController extends Controller
 
     public function index()
     {
-        $contacts = Contact::select('id', 'name', 'balance')->customers()->get();
+        $contacts = Contact::select('id', 'name', 'balance')->customers()->orderBy('name', 'asc')->get();
         $currentStore = Store::find(session('store_id', Auth::user()->store_id));
 
         if (!$currentStore) {
@@ -293,7 +295,7 @@ class POSController extends Controller
                     'unit_cost' => $item['cost'], // Cost price per unit
                     'discount' => $item['discount'], // Discount applied to this item
                     'sale_date' => $sale->sale_date,
-                    'description' => isset($item['category_name']) ? $item['category_name'] : null,
+                    'description' => isset($item['category_name']) ? $item['category_name'] : (isset($item['description'])? $item['description'] : null),
                 ]);
 
                 if ($item['is_stock_managed'] == 1) {

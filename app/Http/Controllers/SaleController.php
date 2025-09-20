@@ -46,8 +46,12 @@ class SaleController extends Controller
             ->leftJoin('contacts', 'sales.contact_id', '=', 'contacts.id')
             ->orderBy('sales.id', 'desc');
 
-        if (isset($filters['contact_id'])) {
-            $query->where('contact_id', $filters['contact_id']);
+        if (!empty($filters['contact_id'])) {
+            if (is_array($filters['contact_id'])) {
+                $query->whereIn('contact_id', $filters['contact_id']);
+            } else {
+                $query->where('contact_id', $filters['contact_id']);
+            }
         }
 
         if (isset($filters['status']) && $filters['status'] !== 'all') {
@@ -82,8 +86,16 @@ class SaleController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only(['contact_id', 'start_date', 'end_date', 'status', 'query', 'per_page']);
+        // Asegurar que sea array (si viene un solo id lo convertimos en array con 1 valor)
+        if (!empty($filters['contact_id']) && !is_array($filters['contact_id'])) {
+            $filters['contact_id'] = [$filters['contact_id']];
+        }
+
         $sales = $this->getSales($filters);
-        $contacts = Contact::select('id', 'name', 'balance')->customers()->get();
+        $contacts = Contact::select('id', 'name', 'balance')
+            ->customers()
+            ->orderBy('name', 'asc')
+            ->get();
 
         return Inertia::render('Sale/Sale', [
             'sales' => $sales,
@@ -133,6 +145,7 @@ class SaleController extends Controller
             'sale_items.quantity',
             'sale_items.unit_price',
             'sale_items.discount',
+            'sale_items.description',
             'products.name',
             DB::raw("CASE 
                 WHEN products.product_type = 'reload' 

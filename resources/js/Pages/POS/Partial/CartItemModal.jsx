@@ -14,6 +14,8 @@ import { usePage } from "@inertiajs/react";
 import { useSales } from "@/Context/SalesContext";
 import { SharedContext } from "@/Context/SharedContext";
 import Commission from "../ProductTypes/Commission";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 export default function CartItemModal() {
     const { return_sale, cart_first_focus } = usePage().props ?? {};
@@ -610,6 +612,9 @@ export default function CartItemModal() {
                                 }}
                             />
                         </Grid>
+                    </Grid>
+                    <Grid size={12}>
+                        <Input value={formState.description} name="description" onChange={handleInputChange} placeholder="Description" />
                     </Grid>
                 </DialogContent>
                 <DialogActions>

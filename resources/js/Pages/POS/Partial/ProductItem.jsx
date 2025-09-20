@@ -28,7 +28,7 @@ export default function ProductItem({ product }) {
             product.discount = discount;
         }
         console.log(product);
-        addToCart(product, 0);
+        //addToCart(product, 0);
 
         if (product.product_type === "reload") {
             const lastAddedIndex = cartState.length > 0 ? cartState.length : 0;
