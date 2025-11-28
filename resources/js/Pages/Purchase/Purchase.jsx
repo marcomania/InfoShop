@@ -1,23 +1,18 @@
-import * as React from "react";
-
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router, Link } from "@inertiajs/react";
-import { useState } from "react";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { useState, useEffect } from "react";
+import { DataGrid } from "@mui/x-data-grid";
 import Grid from "@mui/material/Grid";
 import {
     Button,
     Box,
     IconButton,
     FormControl,
-    InputLabel,
-    Select,
     MenuItem,
     TextField,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import dayjs from "dayjs";
 import Select2 from "react-select";
 import numeral from "numeral";
@@ -97,10 +92,15 @@ export default function Purchases({ purchases, contacts }) {
     const [amountLimit, setAmountLimit] = useState(0);
 
     const [dataPurchases, setDataPurchases] = useState(purchases);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
-    const [status, setStatus] = useState("all");
-    const [selectedFilterContact, setSelectedFilterContact] = useState(null);
+    const [searchTerms, setSearchTerms] = useState({
+        start_date: '',
+        search_query: '',
+        end_date: '',
+        status: 'all',
+        store: 0,
+        per_page: 10,
+        contact_id: ''
+    });
 
     const handleRowClick = (purchase, action) => {
         setSelectedTransaction(purchase);
@@ -125,21 +125,26 @@ export default function Purchases({ purchases, contacts }) {
                 setDataPurchases(response.props.purchases);
             },
         };
-        router.get(
-            url,
-            {
-                start_date: startDate,
-                end_date: endDate,
-                contact_id: selectedFilterContact?.id,
-                status: status,
-            },
-            options
-        );
+        router.get(url, searchTerms, options);
     };
 
-    const handleContactChange = (selectedOption) => {
-        setSelectedFilterContact(selectedOption);
+    const handleSearchChange = (e) => {
+        if (input?.target) {
+            // Handle regular inputs (e.g., TextField)
+            const { name, value } = input.target;
+            setSearchTerms((prev) => ({ ...prev, [name]: value }));
+        } else {
+            // Handle Select2 inputs (e.g., contact selection)
+            setSearchTerms((prev) => ({
+                ...prev,
+                contact_id: input?.id, // Store selected contact or null
+            }));
+        }
     };
+
+    useEffect(() => {
+        refreshPurchases(window.location.pathname);
+    }, [searchTerms]);
 
     return (
         <AuthenticatedLayout>
@@ -162,71 +167,67 @@ export default function Purchases({ purchases, contacts }) {
                                 height: "55px",
                             }),
                         }}
-                        options={contacts} // Options to display in the dropdown
-                        onChange={handleContactChange} // Triggered when an option is selected
-                        isClearable // Allow the user to clear the selected option
+                        options={contacts}
+                        onChange={(selectedOption) => handleSearchChange(selectedOption)}
+                        isClearable
                         getOptionLabel={(option) => option.name}
                         getOptionValue={(option) => option.id}
                     ></Select2>
                 </FormControl>
 
-                <FormControl sx={{ minWidth: "200px" }}>
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                        value={status}
+                <Grid size={{ xs: 12, sm: 2 }}>
+                    <TextField
+                        value={searchTerms.status}
                         label="Status"
-                        onChange={(e) => setStatus(e.target.value)}
-                        required
+                        onChange={handleSearchChange}
                         name="status"
+                        select
+                        fullWidth
+                        size="large"
                     >
                         <MenuItem value={"all"}>All</MenuItem>
                         <MenuItem value={"completed"}>Completed</MenuItem>
                         <MenuItem value={"pending"}>Pending</MenuItem>
-                    </Select>
-                </FormControl>
+                    </TextField>
+                </Grid>
 
-                <FormControl>
+                <Grid size={{ xs: 6, sm: 2 }}>
                     <TextField
                         label="Start Date"
                         name="start_date"
                         placeholder="Start Date"
                         fullWidth
+                        size="large"
                         type="date"
                         slotProps={{
                             inputLabel: {
                                 shrink: true,
                             },
                         }}
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        required
+                        value={searchTerms.start_date}
+                        onChange={handleSearchChange}
                     />
-                </FormControl>
+                </Grid>
 
-                <FormControl>
+                <Grid size={{ xs: 6, sm: 2 }}>
                     <TextField
                         label="End Date"
                         name="end_date"
                         placeholder="End Date"
                         fullWidth
+                        size="large"
                         type="date"
                         slotProps={{
                             inputLabel: {
                                 shrink: true,
                             },
                         }}
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        value={searchTerms.end_date}
+                        onChange={handleSearchChange}
                         required
                     />
-                </FormControl>
-                <Button
-                    variant="contained"
-                    onClick={() => refreshPurchases(window.location.pathname)}
-                    size="large"
-                >
-                    <FindReplaceIcon />
-                </Button>
+                </Grid>
+
                 <Link href="/purchase/create">
                     <Button
                         variant="contained"
@@ -245,23 +246,17 @@ export default function Purchases({ purchases, contacts }) {
                         rowHeight={50}
                         rows={dataPurchases.data}
                         columns={columns(handleRowClick)}
-                        pageSize={5}
-                        slots={{ toolbar: GridToolbar }}
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
                         hideFooter
                     />
                 </Box>
             </Grid>
             <Grid size={12} container justifyContent={"end"}>
                 <CustomPagination
-                    dataLinks={dataPurchases?.links}
                     refreshTable={refreshPurchases}
-                    dataLastPage={dataPurchases?.last_page}
-                ></CustomPagination>
+                    setSearchTerms={setSearchTerms}
+                    searchTerms={searchTerms}
+                    data={dataPurchases}
+                />
             </Grid>
             <AddPaymentDialog
                 open={paymentModalOpen}

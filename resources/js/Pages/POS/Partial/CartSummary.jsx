@@ -5,6 +5,7 @@ import ListItemText from "@mui/material/ListItemText";
 import numeral from "numeral";
 import { useSales as useCart } from '@/Context/SalesContext';
 import { usePage } from "@inertiajs/react";
+import { Separator } from "@/components/ui/separator";
 
 export default function CartSummary() {
     const { cartState, cartTotal, totalQuantity } = useCart();
@@ -12,13 +13,7 @@ export default function CartSummary() {
 
     return (
         <List sx={{ width: "100%", bgcolor: "background.paper",}}>
-            <Divider
-                sx={{
-                    borderBottom: "2px dashed",
-                    borderColor: "grey.500",
-                    my: "1.5rem",
-                }}
-            />
+            <Separator />
             <ListItem
                 secondaryAction={
                     <Typography variant="h5" color="initial" sx={{fontSize:{sm:'1rem', xs:'1.2rem'}}}>

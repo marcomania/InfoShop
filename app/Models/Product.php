@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\Userstamps;
+use App\Casts\DefaultValueCast;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -46,7 +48,15 @@ class Product extends Model
         return \Carbon\Carbon::parse($value)->format('Y-m-d'); // Adjust the format as needed
     }
 
+    public function getImageUrlAttribute($value)
+    {
+        return $value ? Storage::url($value) : null;
+    }
+
     protected $casts = [
         'meta_data' => 'array', // Ensure the meta_data column is treated as an array
+        'batch_number'   => DefaultValueCast::class . ':N/A',
+        'quantity'       => DefaultValueCast::class . ':0',
+        'stock_quantity' => DefaultValueCast::class . ':0',
     ];
 }

@@ -71,6 +71,7 @@ export default function Expense({ expenses, stores }) {
         start_date: '',
         end_date: '',
         store: 0,
+        per_page: 10,
     });
 
     const handleRowClick = (expense, action) => {
@@ -132,9 +133,9 @@ export default function Expense({ expenses, stores }) {
         setSearchTerms((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSearch = () => {
+    useEffect(() => {
         refreshExpenses(window.location.pathname);
-    };
+    }, [searchTerms]);
 
     return (
         <AuthenticatedLayout>
@@ -195,17 +196,6 @@ export default function Expense({ expenses, stores }) {
                     />
                 </Grid>
 
-                <Grid size={{ xs: 4, sm: 1 }}>
-                    <Button
-                        variant="contained"
-                        onClick={() => refreshExpenses(window.location.pathname)}
-                        sx={{ height: "100%" }}
-                        size="large"
-                        fullWidth
-                    >
-                        <FindReplaceIcon />
-                    </Button>
-                </Grid>
                 <Grid size={{ xs: 8, sm: 3 }}>
                     <Button
                         variant="contained"
@@ -228,22 +218,17 @@ export default function Expense({ expenses, stores }) {
                 <DataGrid
                     rows={dataExpenses?.data}
                     columns={columns(handleRowClick)}
-                    slots={{ toolbar: GridToolbar }}
-                    slotProps={{
-                        toolbar: {
-                            showQuickFilter: true,
-                        },
-                    }}
                     hideFooter
                 />
             </Box>
-            <Grid size={12} container justifyContent={"end"}>
+            <Grid size={12} container justifyContent={"end"} spacing={2} alignItems={"center"}>
                 <Chip size="large" label={'Total:' + numeral(totalExpense).format('0,0')} color="primary" />
                 <CustomPagination
-                    dataLinks={dataExpenses?.links}
                     refreshTable={refreshExpenses}
-                    dataLastPage={dataExpenses?.last_page}
-                ></CustomPagination>
+                    setSearchTerms={setSearchTerms}
+                    searchTerms={searchTerms}
+                    data={dataExpenses}
+                />
             </Grid>
 
             <ExpenseDialog

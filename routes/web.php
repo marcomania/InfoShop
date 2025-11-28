@@ -44,6 +44,7 @@ Route::get('/editor', function () {
 });
 
 Route::get('/receipt/{id}', [SaleController::class, 'receipt'])->name('sales.receipt');
+Route::get('/api/receipt-text-raw/{id}', [SaleController::class, 'apiReceipt']);
 Route::get('/pending-sales-receipt/{contact_id}', [SaleController::class, 'pendingSalesReceipt']);
 
 // Route::get('/dashboard', function () {
@@ -95,6 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/sold-items', [SaleController::class, 'solditems'])->name('sales.items');
     Route::delete('/sales/{id}', [SaleController::class, 'destroy'])->name('sales.destroy');
     Route::get('/sale-notification/{id}', [SaleController::class, 'sendNotification']);
+    Route::get('/sold-items-summary', [SaleController::class, 'soldItemSummary'])->name('sales.items.summary');
     
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
     Route::get('/purchase/create', [PurchaseController::class, 'create'])->name('purchases.create');

@@ -11,11 +11,10 @@ import {
     MenuItem,
     Link
 } from "@mui/material";
-import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import dayjs from "dayjs";
 import numeral from "numeral";
 
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import CustomPagination from "@/components/CustomPagination";
 import ChequeFormDialog from "./ChequeFormDialog";
 
@@ -131,14 +130,14 @@ export default function Cheque({ cheques, stores }) {
         setSearchTerms((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSearch = () => {
-        refreshCheques(window.location.pathname);
-    };
-
     useEffect(() => {
         const total = dataCheques.data.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
         setTotalAmount(total);
     }, [dataCheques]);
+
+    useEffect(() => {
+        refreshCheques(window.location.pathname);
+    }, [searchTerms]);
 
     const handleRowClick = (cheque, action) => {
         setSelectedCheque(cheque);
@@ -281,12 +280,6 @@ export default function Cheque({ cheques, stores }) {
                     />
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 1 }}>
-                    <Button variant="contained" fullWidth onClick={handleSearch} sx={{ height: "100%" }}>
-                        <FindReplaceIcon />
-                    </Button>
-                </Grid>
-
                 {/* Add Cheque Button */}
                 <Grid size={{ xs: 12, md: 3, sm: 2 }}>
                     <Button
@@ -310,37 +303,16 @@ export default function Cheque({ cheques, stores }) {
                 <DataGrid
                     rows={dataCheques?.data}
                     columns={columns(handleRowClick)}
-                    slots={{ toolbar: GridToolbar }}
-                    slotProps={{
-                        toolbar: {
-                            showQuickFilter: true,
-                        },
-                    }}
                     hideFooter
                 />
             </Box>
             <Grid size={12} spacing={2} container justifyContent={'end'}>
                 <Chip size="large" label={`Total Amount: ${numeral(totalAmount).format('0,0.00')}`} color="primary" />
-                <TextField
-                    label="Per page"
-                    value={searchTerms.per_page}
-                    onChange={handleSearchChange}
-                    name="per_page"
-                    select
-                    size="small"
-                    sx={{ minWidth: '100px' }}
-                >
-                    <MenuItem value={100}>100</MenuItem>
-                    <MenuItem value={200}>200</MenuItem>
-                    <MenuItem value={300}>300</MenuItem>
-                    <MenuItem value={400}>400</MenuItem>
-                    <MenuItem value={500}>500</MenuItem>
-                    <MenuItem value={1000}>1000</MenuItem>
-                </TextField>
                 <CustomPagination
-                    dataLinks={cheques?.links}
                     refreshTable={refreshCheques}
-                    dataLastPage={cheques?.last_page}
+                    setSearchTerms={setSearchTerms}
+                    searchTerms={searchTerms}
+                    data={dataCheques}
                 />
             </Grid>
             {/* Cheque Form Dialog */}

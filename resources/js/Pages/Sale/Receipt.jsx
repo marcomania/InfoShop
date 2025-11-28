@@ -23,6 +23,7 @@ import numeral from "numeral";
 import dayjs from "dayjs";
 import { useReactToPrint } from "react-to-print";
 import Barcode from "./Barcode";
+import writtenNumber from 'written-number';
 
 export default function Receipt({ sale, salesItems, settings, user_name, credit_sale = false }) {
     const user = usePage().props.auth.user;
@@ -194,6 +195,11 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
         return asciiTable;
     }
 
+    const entero = Math.floor(sale.total_amount);
+    const decimales = Math.round((sale.total_amount - entero) * 100);
+    const textoEntero = writtenNumber(entero, {lang: 'es'}).toUpperCase();
+    const linea = `SON: ${textoEntero} Y ${decimales.toString().padStart(2, '0')}/100 SOLES`;
+
     return (
         <>
             <Head title="Sale Receipt" />
@@ -221,15 +227,13 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                             </Button>
                         )}
 
-                        {user && (
-                            <Button
-                                onClick={reactToPrintFn}
-                                variant="contained"
-                                endIcon={<PrintIcon />}
-                            >
-                                Print
-                            </Button>
-                        )}
+                        <Button
+                            onClick={reactToPrintFn}
+                            variant="contained"
+                            endIcon={<PrintIcon />}
+                        >
+                            Print
+                        </Button>
                     </Box>
                     <div
                         id="print-area"
@@ -273,7 +277,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                     color="initial"
                                     className="receipt-address"
                                 >
-                                    <b>Order: {receiptNo}</b>
+                                    <b>Orden: {receiptNo}</b>
                                 </Typography>
                             </Box>
                             <Divider
@@ -294,9 +298,9 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                             color="initial"
                                             textAlign={"start"}
                                         >
-                                            Date:
+                                            Fecha:
                                             {dayjs(sale.created_at).format(
-                                                "DD-MMM-YYYY, h:mm A"
+                                                "YYYY-MM-DD, h:mm A"
                                             ) + " "}
                                             By: {user_name}
                                         </Typography>
@@ -802,7 +806,9 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-
+                            <Typography sx={styles.receiptTopText} color="initial" textAlign={"center"} >
+                                {linea}
+                            </Typography>
                             <Divider
                                 sx={{
                                     borderBottom: "1px dashed",

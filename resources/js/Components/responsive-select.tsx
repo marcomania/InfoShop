@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
-undefined
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-undefined
+
 export interface Option {
   value: string;
   label: string;
@@ -25,7 +25,7 @@ export interface Option {
   description?: string;
   icon?: React.ReactNode;
 }
-undefined
+
 export interface AsyncSelectProps<T> {
   /** Async function to fetch options */
   fetcher: (query?: string) => Promise<T[]>;
@@ -64,7 +64,7 @@ export interface AsyncSelectProps<T> {
   /** Allow clearing the selection */
   clearable?: boolean;
 }
-undefined
+
 export function AsyncSelect<T>({
   fetcher,
   preload,
@@ -95,12 +95,12 @@ export function AsyncSelect<T>({
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, preload ? 0 : 300);
   const [originalOptions, setOriginalOptions] = useState<T[]>([]);
-undefined
+
   useEffect(() => {
     setMounted(true);
     setSelectedValue(value);
   }, [value]);
-undefined
+
   // Initialize selectedOption when options are loaded and value exists
   useEffect(() => {
     if (value && options.length > 0) {
@@ -110,7 +110,7 @@ undefined
       }
     }
   }, [value, options, getOptionValue]);
-undefined
+
   // Effect for initial fetch
   useEffect(() => {
     const initializeOptions = async () => {
@@ -127,12 +127,12 @@ undefined
         setLoading(false);
       }
     };
-undefined
+
     if (!mounted) {
       initializeOptions();
     }
   }, [mounted, fetcher, value]);
-undefined
+
   useEffect(() => {
     const fetchOptions = async () => {
       try {
@@ -147,7 +147,7 @@ undefined
         setLoading(false);
       }
     };
-undefined
+
     if (!mounted) {
       fetchOptions();
     } else if (!preload) {
@@ -160,7 +160,7 @@ undefined
       }
     }
   }, [fetcher, debouncedSearchTerm, mounted, preload, filterFn]);
-undefined
+
   const handleSelect = useCallback((currentValue: string) => {
     const newValue = clearable && currentValue === selectedValue ? "" : currentValue;
     setSelectedValue(newValue);
@@ -168,7 +168,7 @@ undefined
     onChange(newValue);
     setOpen(false);
   }, [selectedValue, onChange, clearable, options, getOptionValue]);
-undefined
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -243,7 +243,7 @@ undefined
     </Popover>
   );
 }
-undefined
+
 function DefaultLoadingSkeleton() {
   return (
     <CommandGroup>

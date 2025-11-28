@@ -24,7 +24,7 @@ createInertiaApp({
                 <PurchaseProvider>
                     <SharedProvider>
                         <App {...props} />
-                        <Toaster richColors position="bottom-right" />
+                        <Toaster closeButton richColors position="bottom-center" />
                     </SharedProvider>
                 </PurchaseProvider>
                 <ReactQueryDevtools initialIsOpen={false} />

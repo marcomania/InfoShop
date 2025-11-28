@@ -144,9 +144,10 @@ export function DateSelector({
 
   // Manejar selección desde el calendario
   const handleCalendarSelect = (date: Date | undefined) => {
+    console.log("cambiando fecha")
     onChange?.(date)
-    setOpen(false)
-    inputRef.current?.focus()
+    //setOpen(false)
+    //inputRef.current?.focus()
   }
 
   // Manejar clic en el input para determinar la parte enfocada
@@ -222,7 +223,7 @@ export function DateSelector({
           </div>
         </div>
 
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0" align="start">  
           <Calendar
             mode="single"
             selected={value}
@@ -236,8 +237,6 @@ export function DateSelector({
           />
         </PopoverContent>
       </Popover>
-
-      
     </div>
   )
 }

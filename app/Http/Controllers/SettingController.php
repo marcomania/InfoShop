@@ -6,13 +6,13 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Setting;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
     public function index()
     {
-        $imageUrl = '';
-        if (app()->environment('production')) $imageUrl = 'public/';
+        $imageUrl = Storage::url('');
 
         $settings = Setting::all();
         $settingArray = $settings->pluck('meta_value', 'meta_key')->all();
@@ -27,8 +27,7 @@ class SettingController extends Controller
 
     public function quoteTemplate()
     {
-        $imageUrl = '';
-        if (app()->environment('production')) $imageUrl = 'public/';
+        $imageUrl = Storage::url('');
         $id = 2;
 
         $settings = Setting::all();
@@ -88,8 +87,7 @@ class SettingController extends Controller
 
     public function receiptTemplate()
     {
-        $imageUrl = '';
-        if (app()->environment('production')) $imageUrl = 'public/';
+        $imageUrl = Storage::url('');
         $id = 2;
 
         $settings = Setting::all();
@@ -149,8 +147,7 @@ class SettingController extends Controller
 
     public function barcodeTemplate()
     {
-        $imageUrl = '';
-        if (app()->environment('production')) $imageUrl = 'public/';
+        $imageUrl = Storage::url('');
 
         $settings = Setting::whereIn('meta_key', [
             'show_barcode_store',

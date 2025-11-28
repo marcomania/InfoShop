@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router, Link } from "@inertiajs/react";
@@ -8,10 +7,7 @@ import {
     Box,
     TextField,
     IconButton,
-    Chip,
-    MenuItem
 } from "@mui/material";
-import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/HighlightOff';
 import PrintIcon from "@mui/icons-material/Print";
@@ -20,7 +16,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import numeral from "numeral";
 
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import CustomPagination from "@/components/CustomPagination";
 
 const columns = (handleRowClick) => [
@@ -82,22 +78,22 @@ export default function Quotation({ quotations }) {
         if (input?.target) {
             // Handle regular inputs (e.g., TextField)
             const { name, value } = input.target;
-            setFilters((prev) => ({ ...prev, [name]: value }));
+            setSearchTerms((prev) => ({ ...prev, [name]: value }));
         } else {
             // Handle Select2 inputs (e.g., contact selection)
-            setFilters((prev) => ({
+            setSearchTerms((prev) => ({
                 ...prev,
                 contact_id: input?.id, // Store selected contact or null
             }));
         }
     };
 
-    const [filters, setFilters] = useState(() => {
+    const [searchTerms, setSearchTerms] = useState(() => {
         const urlParams = new URLSearchParams(window.location.search);
         return {
             store: 0,
             search_query: "",
-            per_page: 100,
+            per_page: 10,
             contact_id: "",
         };
     });
@@ -148,8 +144,12 @@ export default function Quotation({ quotations }) {
                 setDataQuotations(response.props.quotations);
             },
         };
-        router.get(url, {}, options);
+        router.get(url, searchTerms, options);
     };
+
+    useEffect(() => {
+        refreshQuotations(window.location.pathname);
+    }, [searchTerms]);
 
     return (
         <AuthenticatedLayout>
@@ -168,17 +168,6 @@ export default function Quotation({ quotations }) {
                         placeholder="Start typing..."
                         fullWidth
                     />
-                </Grid>
-                <Grid size={{ xs: 4, sm: 2, md:1 }}>
-                    <Button
-                        variant="contained"
-                        onClick={() => refreshQuotations(window.location.pathname)}
-                        sx={{ height: "100%" }}
-                        size="large"
-                        fullWidth
-                    >
-                        <FindReplaceIcon />
-                    </Button>
                 </Grid>
                 <Grid size={{ xs: 8, sm: 3, md:2 }}>
                     <Button
@@ -202,37 +191,15 @@ export default function Quotation({ quotations }) {
                 <DataGrid
                     rows={dataQuotations?.data}
                     columns={columns(handleRowClick)}
-                    slots={{ toolbar: GridToolbar }}
-                    slotProps={{
-                        toolbar: {
-                            showQuickFilter: true,
-                        },
-                    }}
                     hideFooter
                 />
             </Box>
             <Grid size={12} container justifyContent={"end"}>
-            <TextField
-                        label="Per page"
-                        value={filters.per_page}
-                        onChange={handleFilterChange}
-                        name="per_page"
-                        select
-                        size="small"
-                        sx={{ minWidth: "100px" }}
-                    >
-                        <MenuItem value={100}>100</MenuItem>
-                        <MenuItem value={200}>200</MenuItem>
-                        <MenuItem value={300}>300</MenuItem>
-                        <MenuItem value={400}>400</MenuItem>
-                        <MenuItem value={500}>500</MenuItem>
-                        <MenuItem value={1000}>1000</MenuItem>
-                    </TextField>
                 <CustomPagination
-                    dataLinks={dataQuotations?.links}
                     refreshTable={refreshQuotations}
-                    dataLastPage={dataQuotations?.last_page}
-                ></CustomPagination>
+                    data={dataQuotations}
+                    searchTerms={searchTerms}
+                />
             </Grid>
         </AuthenticatedLayout>
     );

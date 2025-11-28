@@ -18,6 +18,7 @@ import { PaymentSummary } from "@/components/PaymentSummary";
 import { MultiSelect } from "@/components/multi-select";
 
 import AsyncSelectExample from "./ContactSelect";
+import { AsyncSelect } from "@/components/responsive-select";
 
 const columns = (handleRowClick) => [
     {
@@ -220,7 +221,6 @@ export default function Sale({ sales, contacts }) {
     const [selectedContact, setSelectedContact] = useState(null);
     const [amountLimit, setAmountLimit] = useState(0);
     const [dataSales, setDataSales] = useState(sales);
-    const multiSelectRef = useRef(null);
 
     const [searchTerms, setSearchTerms] = useState(getInitialSearchTerms);
 
@@ -291,7 +291,6 @@ export default function Sale({ sales, contacts }) {
 
     useEffect(() => {
         const params = new URLSearchParams(searchTerms).toString();
-        console.log("Actualizando URL con params,", params);
         window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
 
         refreshSales(window.location.pathname);
@@ -324,8 +323,13 @@ export default function Sale({ sales, contacts }) {
             per_page: 10,
         });
         // Limpiar el Select de contactos
-        multiSelectRef.current?.clear();
+        //setSelectedName("");
     };
+
+    async function searchContacts() {
+        return contacts
+    }
+    const [selectedName, setSelectedName] = useState("");
 
     return (
         <AuthenticatedLayout>
@@ -340,9 +344,37 @@ export default function Sale({ sales, contacts }) {
                 size={12}
             >
                 <Grid size={{ xs: 12, sm: 3 }}>
-                    <AsyncSelectExample contacts={contacts} onValueChange={(value) => {
-                        handleSearchChange({ target: { name: 'contact_id', value } });
-                    }} />
+                    <AsyncSelect
+                        fetcher={searchContacts}
+                        preload
+                        filterFn={(object, query) => object.name.toLowerCase().includes(query.toLowerCase())}
+                        renderOption={(object) => (
+                            <div className="flex items-center gap-2">
+                                <div className="flex flex-col">
+                                    <div className="font-medium">{object.name}</div>
+                                    <div className="text-xs text-muted-foreground">{object.balance}</div>
+                                </div>
+                            </div>
+                        )}
+                        getOptionValue={(object) => object.id.toString()}
+                        getDisplayValue={(object) => (
+                            <div className="flex items-center gap-2 text-left">
+                                <div className="flex flex-col leading-tight">
+                                    <div className="font-medium">{object.name}</div>
+                                    <div className="text-xs text-muted-foreground">{object.balance}</div>
+                                </div>
+                            </div>
+                        )}
+                        notFound={<div className="py-6 text-center text-sm">No objects found</div>}
+                        label="Clientes"
+                        placeholder="Buscar Clientes..."
+                        value={selectedName}
+                        onChange={(value) => {
+                            setSelectedName(value ? value.name : "");
+                            handleSearchChange({ target: { name: 'contact_id', value } });
+                        }}
+                        width="100%"
+                    />
                 </Grid>
 
                 <Grid size={{ xs: 12, sm: 2 }}>
@@ -448,30 +480,12 @@ export default function Sale({ sales, contacts }) {
             </Box>
             <Grid size={12} spacing={2} container justifyContent={"end"}>
                 <Chip size="large" label={'Total results : ' + dataSales.total} color="primary" />
-                <TextField
-                    label="Per page"
-                    value={searchTerms.per_page}
-                    onChange={handleSearchChange}
-                    name="per_page"
-                    select
-                    size="small"
-                    sx={{ minWidth: '100px' }}
-                >
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={20}>20</MenuItem>
-                    <MenuItem value={30}>30</MenuItem>
-                    <MenuItem value={40}>40</MenuItem>
-                    <MenuItem value={50}>50</MenuItem>
-                    <MenuItem value={100}>100</MenuItem>
-                </TextField>
                 <CustomPagination
-                    dataLinks={dataSales?.links}
-                    next_page={dataSales.next_page_url}
-                    prev_page={dataSales?.prev_page_url}
-                    current_page={dataSales?.current_page}
                     refreshTable={refreshSales}
-                    dataLastPage={dataSales?.last_page}
-                ></CustomPagination>
+                    setSearchTerms={setSearchTerms}
+                    searchTerms={searchTerms}
+                    data={dataSales}
+                />
             </Grid>
 
             <AddPaymentDialog

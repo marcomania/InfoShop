@@ -20,6 +20,7 @@ import PaymentsIcon from '@mui/icons-material/Payments';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import numeral from "numeral";
 
 export default function ViewDetailsDialog({
     open,

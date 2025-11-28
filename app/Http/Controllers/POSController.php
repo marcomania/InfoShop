@@ -23,64 +23,57 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Query\Expression;
 
 class POSController extends Controller
 {
-    public function getProducts($filters=[])
-    {
-        $imageUrl = Storage::url('');
-        #if (app()->environment('production')) $imageUrl = 'public/storage/';
-
+    public function getProducts($filters = []) {
         $query = Product::query();
-        $query->select(
+
+        $query->select([
             'products.id',
-            DB::raw("CONCAT('{$imageUrl}', products.image_url) AS image_url"),
+            // Para concatenar, usamos CONCAT que Laravel traduce según motor
+            'products.image_url',
             'products.name',
             'products.is_stock_managed',
-            DB::raw("COALESCE(pb.batch_number, 'N/A') AS batch_number"),
-            DB::raw("COALESCE(product_stocks.quantity, 0) AS quantity"),
-            DB::raw("COALESCE(product_stocks.quantity, 0) AS stock_quantity"),
+            'pb.batch_number',
+            'product_stocks.quantity',
             'pb.cost',
             'pb.price',
             'pb.id AS batch_id',
-            'products.meta_data',
             'products.product_type',
             'products.alert_quantity',
             'pb.discount',
-            'pb.discount_percentage'
-        )
-            ->leftJoin('product_batches AS pb', 'products.id', '=', 'pb.product_id') // Join with product_batches using product_id
-            ->leftJoin('product_stocks', 'pb.id', '=', 'product_stocks.batch_id') // Join with product_stocks using batch_id
+            'pb.discount_percentage',
+        ])
+            ->leftJoin('product_batches AS pb', 'products.id', '=', 'pb.product_id')
+            ->leftJoin('product_stocks', 'pb.id', '=', 'product_stocks.batch_id')
             ->where('product_stocks.store_id', session('store_id', Auth::user()->store_id))
             ->where('pb.is_active', 1);
 
-        // Apply category filter if set
         if (isset($filters['category_id'])) {
             $query->where('products.category_id', $filters['category_id']);
         } else {
             $query->where('pb.is_featured', 1);
         }
 
-        $products = $query->groupBy(
+        $products = $query->groupBy([
             'products.id',
             'products.image_url',
             'products.name',
-            'products.discount',
             'products.is_stock_managed',
-            DB::raw("COALESCE(pb.batch_number, 'N/A')"),
+            'pb.batch_number',
             'pb.cost',
             'pb.price',
             'pb.id',
             'product_stocks.quantity',
             'products.product_type',
-            'products.meta_data',
             'products.alert_quantity',
             'pb.discount',
-            'pb.discount_percentage'
-        )
+            'pb.discount_percentage',
+        ])
             ->limit(20)
-            ->orderBy('name', 'asc')
+            ->orderBy('products.name', 'asc')
             ->get();
 
         return $products;
@@ -114,7 +107,6 @@ class POSController extends Controller
         $cart_first_focus = $miscSettings['cart_first_focus'] ?? 'quantity';
         return Inertia::render('POS/POS', [
             'products' => $products,
-            'urlImage' => url('storage/'),
             'customers' => $contacts,
             'currentStore' => $currentStore->name,
             'return_sale' => false,
@@ -126,9 +118,6 @@ class POSController extends Controller
 
     public function returnIndex(Request $request, $sale_id)
     {
-        $imageUrl = 'storage/';
-        if (app()->environment('production')) $imageUrl = 'public/storage/';
-
         $sale = Sale::find($sale_id);
         $contacts = Contact::select('id', 'name', 'balance')->where('id', $sale->contact_id)->get();
         $currentStore = Store::find($sale->store_id);
@@ -143,11 +132,11 @@ class POSController extends Controller
 
         $products = Product::select(
             'products.id',
-            DB::raw("CONCAT('{$imageUrl}', products.image_url) AS image_url"),
+            'products.image_url',
             'products.name',
             'si.discount',
             'products.is_stock_managed',
-            DB::raw("COALESCE(pb.batch_number, 'N/A') AS batch_number"),
+            'pb.batch_number',
             'si.unit_cost as cost',
             'si.unit_price as price',
             'si.quantity',
@@ -168,7 +157,7 @@ class POSController extends Controller
                 'products.name',
                 'si.discount',
                 'products.is_stock_managed',
-                DB::raw("COALESCE(pb.batch_number, 'N/A')"),
+                'pb.batch_number',
                 'si.unit_cost',
                 'si.unit_price',
                 'si.batch_id',
@@ -180,7 +169,6 @@ class POSController extends Controller
 
         return Inertia::render('POS/POS', [
             'products' => $products,
-            'urlImage' => url('storage/'),
             'customers' => $contacts,
             'return_sale' => true,
             'sale_id' => $sale_id,

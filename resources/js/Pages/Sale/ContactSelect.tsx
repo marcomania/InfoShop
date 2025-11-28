@@ -1,4 +1,3 @@
-"use client"
 import { AsyncSelect } from "@/components/responsive-select";
 import { Contact } from "@/types/contacts";
 import { useState } from "react";

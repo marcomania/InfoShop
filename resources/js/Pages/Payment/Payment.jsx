@@ -18,7 +18,7 @@ import numeral from "numeral";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Swal from "sweetalert2";
 
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import CustomPagination from "@/components/CustomPagination";
 import ViewDetailsDialog from "@/components/ViewDetailsDialog";
 
@@ -56,7 +56,7 @@ const columns = (handleRowClick) => [
                 return "N/A"; // Or any other suitable message for null values
             }
             return (
-                <Button variant="text" onClick={() => handleRowClick("view_details",params.value)}>
+                <Button variant="text" onClick={() => handleRowClick("view_details", params.value)}>
                     {"#" + params.value.toString().padStart(4, "0")}
                 </Button>
             );
@@ -90,13 +90,18 @@ const columns = (handleRowClick) => [
 export default function Payment({ payments, transactionType, contacts, selected_contact }) {
     const [dataPayments, setDataPayments] = useState(payments);
     const [paymentSelect, setPaymentSelect] = useState(transactionType);
-    const [paymentMethod, setPaymentMethod] = useState("All");
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
-    const [selectedContact, setSelectedContact] = useState({ name: '', id: selected_contact });
     const [totalAmount, setTotalAmount] = useState(0)
     const [viewDetailsModalOpen, setViewDetailsModalOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+    const [searchTerms, setSearchTerms] = useState({
+        start_date: '',
+        end_date: '',
+        payment_method: 'All',
+        store: 0,
+        per_page: 100,
+        contact_id: selected_contact
+    });
 
     const handleRowClick = (type, id) => {
         if (type == 'delete') {
@@ -126,7 +131,7 @@ export default function Payment({ payments, transactionType, contacts, selected_
                         });
                 }
             });
-        }else if (type == 'view_details') {
+        } else if (type == 'view_details') {
             setSelectedTransaction(id);
             setViewDetailsModalOpen(true);
         }
@@ -141,13 +146,7 @@ export default function Payment({ payments, transactionType, contacts, selected_
                 setDataPayments(response.props.payments);
             },
         };
-        router.get(url, {
-            contact_id: selectedContact?.id,
-            payment_method: paymentMethod,
-            start_date: startDate,
-            end_date: endDate,
-        },
-            options);
+        router.get(url, searchTerms, options);
     };
 
     const handleSelectPayments = (type) => {
@@ -156,16 +155,30 @@ export default function Payment({ payments, transactionType, contacts, selected_
         if (type == "purchases") router.get("/payments/purchases?page=1");
     };
 
-    const handleContactChange = (selectedOption) => {
-        setSelectedContact(selectedOption);
-    };
-
     useEffect(() => {
         const total = Object.values(dataPayments.data).reduce((accumulator, current) => {
             return accumulator + parseFloat(current.amount);
         }, 0);
         setTotalAmount(total);
     }, [dataPayments]);
+
+    const handleSearchChange = (input) => {
+        if (input?.target) {
+            // Handle regular inputs (e.g., TextField)
+            const { name, value } = input.target;
+            setSearchTerms((prev) => ({ ...prev, [name]: value }));
+        } else {
+            // Handle Select2 inputs (e.g., contact selection)
+            setSearchTerms((prev) => ({
+                ...prev,
+                contact_id: input?.id, // Store selected contact or null
+            }));
+        }
+    };
+
+    useEffect(() => {
+        refreshPayments(window.location.pathname);
+    }, [searchTerms]);
 
     return (
         <AuthenticatedLayout>
@@ -206,9 +219,9 @@ export default function Payment({ payments, transactionType, contacts, selected_
                                 height: "55px",
                             }),
                         }}
-                        options={contacts} // Options to display in the dropdown
-                        onChange={handleContactChange} // Triggered when an option is selected
-                        isClearable // Allow the user to clear the selected option
+                        options={contacts} 
+                        onChange={(selectedOption) => handleSearchChange(selectedOption)} 
+                        isClearable
                         getOptionLabel={(option) => option.name}
                         getOptionValue={(option) => option.id}
                     ></Select2>
@@ -216,9 +229,9 @@ export default function Payment({ payments, transactionType, contacts, selected_
 
                 <Grid size={{ xs: 12, sm: 2 }}>
                     <TextField
-                        value={paymentMethod}
+                        value={searchTerms.payment_method}
                         label="Select Payment Method"
-                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        onChange={handleSearchChange}
                         required
                         name="payment_method"
                         select
@@ -246,8 +259,8 @@ export default function Payment({ payments, transactionType, contacts, selected_
                                 shrink: true,
                             },
                         }}
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
+                        value={searchTerms.start_date}
+                        onChange={handleSearchChange}
                         required
                     />
                 </Grid>
@@ -264,24 +277,11 @@ export default function Payment({ payments, transactionType, contacts, selected_
                                 shrink: true,
                             },
                         }}
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        value={searchTerms.end_date}
+                        onChange={handleSearchChange}
                         required
                     />
                 </Grid>
-
-                <Grid size={{ xs: 6, sm: 1 }}>
-                    <Button
-                        variant="contained"
-                        onClick={() => refreshPayments(window.location.pathname)}
-                        sx={{ height: "100%" }}
-                        fullWidth
-                    >
-                        <FindReplaceIcon />
-                    </Button>
-                </Grid>
-
-
             </Grid>
 
             <Box
@@ -291,22 +291,17 @@ export default function Payment({ payments, transactionType, contacts, selected_
                 <DataGrid
                     rows={dataPayments?.data}
                     columns={columns(handleRowClick)}
-                    slots={{ toolbar: GridToolbar }}
-                    slotProps={{
-                        toolbar: {
-                            showQuickFilter: true,
-                        },
-                    }}
                     hideFooter
                 />
             </Box>
-            <Grid size={12} container justifyContent={'end'}>
+            <Grid size={12} container justifyContent={"end"} spacing={2} alignItems={"center"}>
                 <Chip size="large" label={'Total:' + numeral(totalAmount).format('0,0.00')} color="primary" />
                 <CustomPagination
-                    dataLinks={dataPayments?.links}
                     refreshTable={refreshPayments}
-                    dataLastPage={dataPayments?.last_page}
-                ></CustomPagination>
+                    setSearchTerms={setSearchTerms}
+                    searchTerms={searchTerms}
+                    data={dataPayments}
+                />
             </Grid>
 
             {viewDetailsModalOpen && (

@@ -18,6 +18,7 @@ use App\Models\Store;
 use App\Models\SalaryRecord;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+
 class DashboardController extends Controller
 {
     public function index()
@@ -69,12 +70,36 @@ class DashboardController extends Controller
             ->where('products.is_stock_managed', 1)
             ->where('product_stocks.quantity', '<=', 0)
             ->count();
+        
+        //Sales chart
+        $totalSaleAmount = Sale::selectRaw('DATE(sale_date) as date, SUM(total_amount) as sale, 0 as cash')
+            ->whereBetween('sale_date', [now()->startOfMonth()->subMonths(3), now()])
+            ->groupBy('date');
+
+        $totalPayments = Transaction::selectRaw('DATE(transaction_date) as date, 0 as sale, SUM(amount) as cash')
+            ->whereBetween('transaction_date', [now()->startOfMonth()->subMonths(3), now()])
+            ->where('payment_method', 'Cash')
+            ->groupBy('date');
+
+        $saleChart =  $totalSaleAmount->unionAll($totalPayments)
+            ->orderBy('date')
+            ->get()
+            ->groupBy('date')
+            ->map(function ($group, $date) {
+                return [
+                    'date' => $group->first()->date,
+                    'sale' => $group->whereNotNull('sale')->sum('sale'),
+                    'cash' => $group->whereNotNull('cash')->sum('cash'),
+                ];
+            })->values()->toArray();
+        //Sales chart end
 
         $customerBalance = Contact::customers()->sum('balance');
         $data['totalValuation'] = number_format($totalValuation);
         $data['customerBalance'] = number_format($customerBalance);
         $data['lowStock'] = number_format($countLowStockItems);
         $data['outOfStock'] = number_format($outOfStockItems);
+        $data['saleChart'] = $saleChart;
 
         // Render the 'Dashboard' component with data
         return Inertia::render('Dashboard/Dashboard', [

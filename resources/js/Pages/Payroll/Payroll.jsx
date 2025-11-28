@@ -131,17 +131,15 @@ export default function Payroll({ salaries, employees, stores }) {
         setSearchTerms((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSearch = () => {
+    useEffect(() => {
         refreshSalaries(window.location.pathname);
-    };
+    }, [searchTerms]);
 
     return (
         <AuthenticatedLayout>
             <Head title="Salaries" />
-            <Grid container spacing={2} alignItems="center" sx={{ width: "100%" }}>
-
+            <Grid container spacing={2} alignItems="center" sx={{ width: "100%" }} justifyContent={"end"}>
                 <Grid size={{ xs: 12, sm: 3 }}>
-
                     <TextField
                         label="Employee"
                         name="employee_id"
@@ -159,22 +157,21 @@ export default function Payroll({ salaries, employees, stores }) {
                     </TextField>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 3 }}>
-                 
-                        <TextField
+                    <TextField
                         label="Store"
-                            name="store_id"
-                            value={searchTerms.store_id}
-                            onChange={handleSearchChange}
-                            select
-                            fullWidth
-                        >
-                            <MenuItem value="">All Stores</MenuItem>
-                            {stores.map((store) => (
-                                <MenuItem key={store.id} value={store.id}>
-                                    {store.name}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                        name="store_id"
+                        value={searchTerms.store_id}
+                        onChange={handleSearchChange}
+                        select
+                        fullWidth
+                    >
+                        <MenuItem value="">All Stores</MenuItem>
+                        {stores.map((store) => (
+                            <MenuItem key={store.id} value={store.id}>
+                                {store.name}
+                            </MenuItem>
+                        ))}
+                    </TextField>
                 </Grid>
                 <Grid size={{ xs: 6, sm: 2 }}>
                     <TextField
@@ -210,33 +207,21 @@ export default function Payroll({ salaries, employees, stores }) {
                         required
                     />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 1 }}>
-                    <Button
-                        variant="contained"
-                        onClick={handleSearch}
-                        sx={{ height: "100%" }}
-                        size="large"
-                        fullWidth
-                    >
-                        <FindReplaceIcon />
-                    </Button>
-                </Grid>
             </Grid>
 
             <Box className="py-6 w-full" sx={{ display: "grid", height: "calc(100vh - 190px)", }}>
                 <DataGrid
                     rows={dataSalaries?.data}
                     columns={columns(handleRowClick)}
-                    slots={{ toolbar: GridToolbar }}
-                    slotProps={{ toolbar: { showQuickFilter: true } }}
                     hideFooter
                 />
             </Box>
             <Grid container justifyContent={"end"}>
                 <CustomPagination
-                    dataLinks={dataSalaries?.links}
                     refreshTable={refreshSalaries}
-                    dataLastPage={dataSalaries?.last_page}
+                    setSearchTerms={setSearchTerms}
+                    searchTerms={searchTerms}
+                    data={dataSalaries}
                 />
             </Grid>
         </AuthenticatedLayout>

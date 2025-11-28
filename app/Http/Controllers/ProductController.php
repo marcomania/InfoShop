@@ -23,16 +23,13 @@ class ProductController extends Controller
 {
     public function getProducts($filters)
     {
-        $imageUrl = 'storage/';
-        if (app()->environment('production')) $imageUrl = 'public/storage/';
-
-        $query = ProductBatch::query();
+        $query = Product::query();
         $query->select(
             'products.id',
             'product_stocks.id as stock_id',
             'product_batches.is_featured',
             'product_batches.id AS batch_id',
-            DB::raw("CONCAT('{$imageUrl}', products.image_url) AS image_url"),
+            'products.image_url', // ✅ pasa por accessor
             'products.name',
             'products.barcode',
             DB::raw("COALESCE(products.sku, 'N/A') AS sku"),
@@ -49,36 +46,40 @@ class ProductController extends Controller
             'product_batches.discount',
             'product_batches.discount_percentage',
         )
-            ->leftJoin('products', 'products.id', '=', 'product_batches.product_id') // Join with product_batches using product_id
-            ->leftJoin('product_stocks', 'product_batches.id', '=', 'product_stocks.batch_id') // Join with product_stocks using batch_id
-            ->leftJoin('contacts', 'product_batches.contact_id', '=', 'contacts.id'); // Join with product_stocks using batch_id
+            ->leftJoin('product_batches', 'products.id', '=', 'product_batches.product_id')
+            ->leftJoin('product_stocks', 'product_batches.id', '=', 'product_stocks.batch_id')
+            ->leftJoin('contacts', 'product_batches.contact_id', '=', 'contacts.id');
 
-        // Apply dynamic alert_quantity filter
+        // Alert quantity
         if (!empty($filters['alert_quantity'])) {
             $query->where('product_stocks.quantity', '<=', $filters['alert_quantity']);
         }
 
+        // Store
         if (isset($filters['store']) && !empty($filters['store'] != 0)) {
             $query->where('product_stocks.store_id', $filters['store']);
         }
 
+        // Contact
         if (isset($filters['contact_id'])) {
             $query->where('product_batches.contact_id', $filters['contact_id']);
         }
 
-        // Apply filters based on the status
+        // Status
         if (isset($filters['status']) && $filters['status'] == 0) {
             $query->where('product_batches.is_active', 0);
         } else if (isset($filters['status']) && $filters['status'] == 'alert') {
-            $query->whereColumn('product_stocks.quantity', '<=', 'products.alert_quantity');
-            $query->where('product_batches.is_active', 1);
+            $query->whereColumn('product_stocks.quantity', '<=', 'products.alert_quantity')
+                ->where('product_batches.is_active', 1);
         } else if (isset($filters['status']) && $filters['status'] == 'out_of_stock') {
-            $query->where('product_stocks.quantity', '<=', 0);
-            $query->where('products.is_stock_managed', 1);
+            $query->where('product_stocks.quantity', '<=', 0)
+                ->where('products.is_stock_managed', 1)
+                ->where('product_batches.is_active', 1);
+        } else {
             $query->where('product_batches.is_active', 1);
-        } else $query->where('product_batches.is_active', 1);
+        }
 
-        // Apply search query if provided
+        // Search
         if (!empty($filters['search_query'])) {
             $query->where(function ($query) use ($filters) {
                 $query->where('products.barcode', 'LIKE', '%' . $filters['search_query'] . '%')
@@ -86,10 +87,11 @@ class ProductController extends Controller
             });
         }
 
-        $perPage = $filters['per_page'] ?? 100; // Default to 25 items per page
+        $perPage = $filters['per_page'] ?? 100;
         $query->orderBy('products.id', 'desc');
         $results = $query->paginate($perPage);
         $results->appends($filters);
+
         return $results;
     }
 
@@ -106,7 +108,7 @@ class ProductController extends Controller
         return Inertia::render('Product/Product', [
             'products' => $products,
             'stores' => $stores,
-            'pageLabel' => 'Products',
+            'pageLabel' => 'Productos',
             'remember' => true,
             'contacts' => $contacts,
         ]);
@@ -140,9 +142,6 @@ class ProductController extends Controller
 
     public function find($id)
     {
-        $imageUrl = 'storage/';
-        if (app()->environment('production')) $imageUrl = 'public/storage/';
-
         $miscSettings = Setting::getMiscSettings();
         $collection = Collection::select('id', 'name', 'collection_type')->get();
         $product = Product::findOrFail($id);
@@ -153,10 +152,6 @@ class ProductController extends Controller
         }
         $product->meta_data = $metaData;
 
-        if (!empty($product->image_url)) {
-            // If the image URL exists and is not empty
-            $product->image_url = asset($imageUrl . $product->image_url);
-        }
         // Render the 'Product/ProductForm' component for adding a new product
         return Inertia::render('Product/ProductForm', [
             'collection' => $collection, // Example if you have categories
@@ -343,15 +338,12 @@ class ProductController extends Controller
 
     public function searchProduct(Request $request)
     {
-        $imageUrl = 'storage/';
-        if (app()->environment('production')) $imageUrl = 'public/storage/';
-
         $search_query = $request->input('search_query');
         $is_purchase = $request->input('is_purchase', 0);
 
         $products = Product::select(
             'products.id',
-            DB::raw("CONCAT('{$imageUrl}', products.image_url) AS image_url"),
+            'products.image_url',
             'products.name',
             'products.barcode',
             // DB::raw("COALESCE(products.sku, 'N/A') AS sku"), //if we comment it, it will not generate on front end
@@ -532,8 +524,7 @@ class ProductController extends Controller
 
     public function getBarcode($batch_id)
     {
-        $imageUrl = '';
-        if (app()->environment('production')) $imageUrl = 'public/';
+        $imageUrl = Storage::url('');
 
         $product = ProductBatch::select('products.name', 'products.barcode', 'product_batches.price', 'product_batches.discount', 'product_batches.discount_percentage')
             ->join('products', 'product_batches.product_id', '=', 'products.id')

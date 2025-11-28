@@ -114,7 +114,7 @@ export default function CartFooter() {
     };
 
     return (
-        <Grid container sx={{ pt: "4.5rem" }} spacing={1}>
+        <Grid container spacing={1}>
             <Grid container spacing={1} width={"100%"} >
                 <Grid size={{ xs: 6, sm: 3 }}>
                     <Button

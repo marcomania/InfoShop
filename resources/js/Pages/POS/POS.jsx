@@ -26,6 +26,7 @@ import CartIcon from "./Partial/CartIcon";
 import { SalesProvider } from "@/Context/SalesContext";
 import CartItemsTop from "./Partial/CartItemsTop";
 import POSBottomBar from "./Partial/POSBottomBar";
+import { Separator } from "@/components/ui/separator";
 
 const drawerWidth = 530;
 
@@ -37,16 +38,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
     ...theme.mixins.toolbar,
     justifyContent: "flex-end",
 }));
-
-const DrawerFooter = styled("div")(({ theme }) => ({
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    zIndex: "999",
-}));
-
 
 function POS({ products, customers, return_sale, categories }) {
     const cartType = return_sale ? 'sales_return_cart' : 'sales_cart';
@@ -86,24 +77,22 @@ function POS({ products, customers, return_sale, categories }) {
 
     const drawer = (
         <>
-            <form action="/pos" method="post">
-                <Toolbar sx={{ display: { xs: "none", sm: "flex" } }}>
+            <form action="/pos" method="post" className="flex flex-col h-full">
+                <Toolbar >
                     <CustomerSelect customers={customers} />
                 </Toolbar>
-                <Divider />
-                <Box
-                    className="flex flex-col overflow-auto"
-                    sx={{ height: { sm: "calc(100vh - 275px);", xs: "calc(100vh - 350px);" } }}
-                >
+                <Separator />
+                <div className="flex-1 flex flex-col overflow-y-auto" >
                     {/* Cart Items - List of all items */}
                     <CartItems />
-                    {/* Cart Summary - Total and discount area */}
-                    <CartSummary />
-                </Box>
-                <DrawerFooter>
+
+                </div>
+                {/* Cart Summary - Total and discount area */}
+                <CartSummary />    
+                <div className="bg-background p-2">
                     {/* Cart footer - Buttons */}
                     <CartFooter />
-                </DrawerFooter>
+                </div>
             </form>
         </>
     );
@@ -159,34 +148,28 @@ function POS({ products, customers, return_sale, categories }) {
 
                     </Toolbar>
                 </AppBar>
-                <Box
-                    component="main"
-                    sx={{
-                        flexGrow: 1,
-                        p: 3,
-                        width: { sm: `calc(100% - ${drawerWidth}px)` },
-                    }}
-                >
-                    <Toolbar />
+                <main className="flex-1 p-3 w-full">
+                    {/* Espacio del Toolbar si lo necesitas */}
+                    <div className="mb-4 h-12" /> 
 
-                    {/* Product items area  */}
-                    <Grid container spacing={2} sx={{ mb: 8 }}>
+                    {/* Área de productos */}
+                    <div className="flex flex-wrap justify-left gap-3 mb-8">
                         {dataProducts.map((product) => (
-                            <Grid
-                                key={product.id + product.batch_number}
-                                size={{ xs: 6, sm: 6, md: 2 }}
-                                sx={{ cursor: "pointer", }}
-                            >
-                                <ProductItem product={product}></ProductItem>
-                            </Grid>
+                        <ProductItem
+                            key={`${product.id}-${product.batch_number || ""}`}
+                            product={product}
+                        />
                         ))}
 
-                        {/* Featured and categories */}
                         {!return_sale && (
-                            <POSBottomBar drawerWidth={drawerWidth} categories={categories} setProducts={setProducts} />
+                        <POSBottomBar
+                            drawerWidth={drawerWidth}
+                            categories={categories}
+                            setProducts={setProducts}
+                        />
                         )}
-                    </Grid>
-                </Box>
+                    </div>
+                </main>
                 <Box
                     component="nav"
                     sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}

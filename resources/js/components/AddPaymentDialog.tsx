@@ -174,7 +174,7 @@ export default function AddPaymentDialog({
     return (
         <React.Fragment>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-lg" >
+                <DialogContent className="max-w-lg">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(
                             onSubmit,

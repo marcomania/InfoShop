@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router } from "@inertiajs/react";
 import Grid from "@mui/material/Grid";
@@ -7,12 +6,12 @@ import { Button, Box, TextField, Tooltip, MenuItem, Chip, IconButton } from "@mu
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import Select2 from "react-select";
 import numeral from "numeral";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import CustomPagination from "@/components/CustomPagination";
 
-const columns = (handleRowClick) => [
+const columns = () => [
     {
         field: "id",
         headerName: "ID",
@@ -30,7 +29,7 @@ const columns = (handleRowClick) => [
             </Tooltip>
         ),
     },
-    {field: 'barcode', headerName: 'Barcode', width: 200, selector: row => row.barcode, sortable: true,hideable: true},
+    { field: 'barcode', headerName: 'Barcode', width: 200, selector: row => row.barcode, sortable: true, hideable: true },
     { field: "product_name", headerName: "Product Name", width: 200, },
     {
         field: "quantity", headerName: "Quantity", width: 100, align: 'right', headerAlign: 'right',
@@ -65,12 +64,21 @@ const columns = (handleRowClick) => [
     {
         field: 'total',
         headerName: "Total",
-        width: 100,
+        width: 120,
         align: 'right',
         headerAlign: 'right',
         renderCell: (params) => {
-            const change = (params.row.unit_price - params.row.discount) * params.row.quantity;
-            return numeral(change).format('0,0.00');
+            const total = (params.row.unit_price - params.row.discount) * params.row.quantity;
+
+            if (total === 0) {
+                return (
+                    <span className="bg-green-600 text-white px-2 py-1 rounded-md">
+                        Free
+                    </span>
+                );
+            }
+
+            return numeral(total).format('0,0.00');
         },
     },
     // { field: 'profit_amount', headerName: 'Profit Amount', width: 120 },
@@ -82,7 +90,7 @@ const columns = (handleRowClick) => [
     {
         field: "action",
         headerName: "Action",
-        width: 150,
+        width: 80,
         renderCell: (params) => {
             if (params.row.quantity < 0) return null;
             return (
@@ -107,15 +115,12 @@ export default function SoldItem({ sold_items, contacts }) {
         contact_id: '',
         status: 'all',
         query: '',
-        order_by:'default',
+        order_by: 'default',
+        item_type: "all",
         per_page: 100,
     });
 
-    const handleRowClick = (sold_item, action) => {
-
-    };
-
-    const refreshSoldItems = (url) => {
+    const refreshSoldItems = (url = window.location.pathname) => {
         const options = {
             preserveState: true, // Preserves the current component's state
             preserveScroll: true, // Preserves the current scroll position
@@ -128,6 +133,15 @@ export default function SoldItem({ sold_items, contacts }) {
             url, { ...searchTerms }, options
         );
     };
+
+    const [initialized, setInitialized] = useState(false); //To avoid re fetch data on page load
+        useEffect(() => {
+            if (!initialized) {
+                setInitialized(true);
+                return; // Skip first run
+            }
+        refreshSoldItems(window.location.pathname);
+    }, [searchTerms]);
 
     const handleSearchChange = (input) => {
 
@@ -179,6 +193,7 @@ export default function SoldItem({ sold_items, contacts }) {
                         label="Start Date"
                         name="start_date"
                         placeholder="Start Date"
+                        size="large"
                         fullWidth
                         type="date"
                         slotProps={{
@@ -197,8 +212,8 @@ export default function SoldItem({ sold_items, contacts }) {
                         name="end_date"
                         placeholder="End Date"
                         fullWidth
+                        size="large"
                         type="date"
-                        slots={{ toolbar: GridToolbar }}
                         slotProps={{
                             inputLabel: {
                                 shrink: true,
@@ -212,9 +227,33 @@ export default function SoldItem({ sold_items, contacts }) {
 
                 <Grid size={{ xs: 6, sm: 2 }}>
                     <TextField
+                        label="Item type"
+                        name="item_type"
+                        size="large"
+                        fullWidth
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true,
+                            },
+                        }}
+                        value={searchTerms.item_type}
+                        onChange={handleSearchChange}
+                        required
+                        select
+                    >
+                        <MenuItem value={'all'}>All</MenuItem>
+                        <MenuItem value={'regular'}>Regular</MenuItem>
+                        <MenuItem value={'free'}>Free</MenuItem>
+                        <MenuItem value={'return'}>Return</MenuItem>
+                    </TextField>
+                </Grid>
+
+                <Grid size={{ xs: 12, sm: 2 }}>
+                    <TextField
                         label="Search"
                         name="query"
                         placeholder="Search"
+                        size="large"
                         fullWidth
                         slotProps={{
                             inputLabel: {
@@ -230,6 +269,7 @@ export default function SoldItem({ sold_items, contacts }) {
                         }}
                     />
                 </Grid>
+
                 {/* <Grid size={{ xs: 6, sm: 2 }}>
                     <TextField
                         label="Order By"
@@ -263,8 +303,8 @@ export default function SoldItem({ sold_items, contacts }) {
             >
                 <DataGrid
                     rows={dataSoldItems.data}
-                    columns={columns(handleRowClick)}
-                    slots={{ toolbar: GridToolbar }}
+                    getRowId={(row) => row.id}
+                    columns={columns()}
                     slotProps={{
                         toolbar: {
                             showQuickFilter: true,
@@ -283,28 +323,14 @@ export default function SoldItem({ sold_items, contacts }) {
             </Box>
             <Grid size={12} spacing={2} container justifyContent={"end"}>
                 <Chip size="large" label={'Total results : ' + dataSoldItems.total} color="primary" />
-                <TextField
-                    label="Per page"
-                    value={searchTerms.per_page}
-                    onChange={handleSearchChange}
-                    name="per_page"
-                    select
-                    size="small"
-                    sx={{ minWidth: '100px' }}
-                >
-                    <MenuItem value={100}>100</MenuItem>
-                    <MenuItem value={200}>200</MenuItem>
-                    <MenuItem value={300}>300</MenuItem>
-                    <MenuItem value={400}>400</MenuItem>
-                    <MenuItem value={500}>500</MenuItem>
-                    <MenuItem value={1000}>1000</MenuItem>
-                </TextField>
+                {/*<Chip size="large" label={'Total Quantity : ' + dataSoldItems.data.reduce((sum, item) => sum + item.quantity, 0)} color="primary" /> */}
 
                 <CustomPagination
-                    dataLinks={dataSoldItems?.links}
                     refreshTable={refreshSoldItems}
-                    dataLastPage={dataSoldItems?.last_page}
-                ></CustomPagination>
+                    setSearchTerms={setSearchTerms}
+                    searchTerms={searchTerms}
+                    data={dataSoldItems}
+                />
             </Grid>
         </AuthenticatedLayout>
     );
