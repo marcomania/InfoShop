@@ -5,11 +5,12 @@ import { Head, router } from "@inertiajs/react";
 import Grid from "@mui/material/Grid";
 import { Button, Box, TextField, MenuItem, Table, TableBody, TableContainer, TableHead, TableRow, Paper, Alert } from "@mui/material";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
-import dayjs from "dayjs";
+import { startOfMonth } from "date-fns";
 import numeral from "numeral";
 
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import { useDate } from '@/hooks/useDate';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -40,10 +41,11 @@ export default function EmployeeReport({
     employee,
 }) {
     const [dataReport, setDataReport] = useState(report);
+    const { formatDate } = useDate();
 
     const [searchTerms, setSearchTerms] = useState({
-        start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
-        end_date: dayjs().format("YYYY-MM-DD"),
+        start_date: formatDate(startOfMonth(new Date()), "yyyy-MM-dd"),
+        end_date: formatDate(new Date(), 'yyyy-MM-dd'),
         employee: employee.id,
     });
 

@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import useCartBase from './useCartBase';
+import { usePurchaseCartStore } from '../Stores/useCartStore';
 
 const PurchaseContext = createContext();
 
 const PurchaseProvider = ({ children }) => {
-  const { cartState, addToCart, removeFromCart, updateProductQuantity, emptyCart } = useCartBase('purchase_cart');
+  const { cartState, addToCart, removeFromCart, updateProductQuantity, emptyCart } = usePurchaseCartStore();
 
   const { cartTotal, totalQuantity, totalProfit } = useMemo(() => {
     return cartState.reduce(

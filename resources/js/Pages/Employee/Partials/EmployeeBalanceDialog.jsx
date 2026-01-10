@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -8,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Swal from "sweetalert2";
 import axios from "axios";
-import dayjs from "dayjs";
+import { format } from "date-fns";
 import { MenuItem, Button } from "@mui/material";
 
 const getInitialFormData = (employee) => ({
@@ -17,7 +16,7 @@ const getInitialFormData = (employee) => ({
     description: 'Pending Salary',         // Default to 'Pending Salary'
     select_description: 'Pending Salary',  // Default to 'Pending Salary'
     store_id: employee?.store_id || 1, // Default to employee's store_id or 1
-    log_date:dayjs().format("YYYY-MM-DD")
+    log_date: format(new Date(),"yyyy-MM-dd")
 });
 
 export default function EmployeeBalanceDialog({ open, setOpen, employee, stores, refreshEmployees, }) {

@@ -18,9 +18,8 @@ import Tabs from '@mui/material/Tabs';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import numeral from "numeral";
+import { useDate } from "@/hooks/useDate";
 
 export default function ViewDetailsDialog({
     open,
@@ -30,7 +29,7 @@ export default function ViewDetailsDialog({
 }) {
     const [tabValue, setTabValue] = React.useState(0);
     const [details, setDetails] = useState([]);
-    dayjs.extend(utc)
+    const { formatDate } = useDate();
 
     const handleChange = (event, newValue) => {
         setTabValue(newValue);
@@ -55,6 +54,7 @@ export default function ViewDetailsDialog({
             setPayments(response.data.payments);
             setItems(response.data.items);
             setDetails(response.data.details)
+            console.log('Fetched details: ', response.data.details);
         } catch (error) {
             console.error('Error fetching payments: ', error);
         }
@@ -122,7 +122,7 @@ export default function ViewDetailsDialog({
                         <TableBody>
                             <TableRow>
                                 <TableCell align="left">Date</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }} align="right">{type === 'sales' || type === 'sale' ? dayjs(details.sale_date).format('DD-MM-YYYY') : dayjs(details.purchase_date).format('DD-MM-YYYY')}</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold' }} align="right">{type === 'sales' || type === 'sale' ? formatDate(details.sale_date,"dd-MM-yyyy") : formatDate(details.purchase_date,"dd-MM-yyyy")}</TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell align="left">Contact Name</TableCell>
@@ -138,7 +138,7 @@ export default function ViewDetailsDialog({
                             </TableRow>
                             <TableRow>
                                 <TableCell align="left">Created At</TableCell>
-                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{dayjs(details.created_at).utc().format("DD-MM-YYYY")}</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{formatDate(details.created_at)}</TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>

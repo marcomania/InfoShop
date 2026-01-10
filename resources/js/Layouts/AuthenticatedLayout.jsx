@@ -43,7 +43,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import PermMediaIcon from '@mui/icons-material/PermMedia';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoneyCheck, faFileInvoice, faBoxesStacked } from "@fortawesome/free-solid-svg-icons";
-import infoshopLogo from "@/infoshop.png";
+import aynishopLogo from "@/aynishop.png";
 const drawerWidth = 240;
 
 function AuthenticatedLayout({ header, children, ...props }) {
@@ -159,7 +159,7 @@ function AuthenticatedLayout({ header, children, ...props }) {
                     size={12}
                 >
                     <img
-                        src={infoshopLogo}
+                        src={aynishopLogo}
                         style={{ height: "80px", objectFit: "contain" }}
                     ></img>
 

@@ -8,13 +8,15 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Swal from "sweetalert2";
 import axios from "axios";
-import dayjs from "dayjs";
+import { useDate } from '@/hooks/useDate';
 import { MenuItem, Button } from "@mui/material";
 
 export default function SalaryFormDialog({ open, setOpen, employee, stores, refreshEmployees }) {
+    const { formatDate } = useDate();
+
     const [formData, setFormData] = useState({
         employee_id: employee?.id,
-        salary_date: dayjs().format("YYYY-MM-DD"),
+        salary_date: formatDate(new Date(), 'yyyy-MM-dd'),
         net_salary: "",
         salary_from: "Cash Drawer",
         store_id: 1,

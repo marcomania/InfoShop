@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import useCartBase from './useCartBase';
+import { useSalesCartStore, useSalesReturnCartStore } from '../Stores/useCartStore';
 
 const SalesContext = createContext();
 
-const SalesProvider = ({ children, cartType = 'sales_cart'}) => {
+const SalesProvider = ({ children, cartType = 'sales_cart' }) => {
 
-  const { cartState, addToCart, removeFromCart, updateProductQuantity, emptyCart, updateCartItem, holdCart, setHeldCartToCart, removeHeldItem } = useCartBase(cartType);
+  const useSelectedCartStore = cartType === 'sales_return_cart' ? useSalesReturnCartStore : useSalesCartStore;
+  const { cartState, addToCart, removeFromCart, updateProductQuantity, emptyCart, updateCartItem, holdCart, setHeldCartToCart, removeHeldItem, heldCarts } = useSelectedCartStore();
 
   const { cartTotal, totalQuantity, totalProfit } = useMemo(() => {
     const result = cartState.reduce(
@@ -24,31 +25,32 @@ const SalesProvider = ({ children, cartType = 'sales_cart'}) => {
       },
       { cartTotal: 0, totalQuantity: 0, totalProfit: 0 });
 
-      result.cartTotal = parseFloat(result.cartTotal.toFixed(1));
-      result.totalProfit = parseFloat(result.totalProfit.toFixed(1));
+    result.cartTotal = parseFloat(result.cartTotal.toFixed(1));
+    result.totalProfit = parseFloat(result.totalProfit.toFixed(1));
 
-      return result;
+    return result;
   }, [cartState]);
 
   return (
-      <SalesContext.Provider
-          value={{
-              cartState,
-              cartTotal,
-              totalQuantity,
-              totalProfit,
-              addToCart,
-              removeFromCart,
-              updateProductQuantity,
-              emptyCart,
-              updateCartItem,
-              holdCart,
-              setHeldCartToCart,
-              removeHeldItem,
-          }}
-      >
-          {children}
-      </SalesContext.Provider>
+    <SalesContext.Provider
+      value={{
+        cartState,
+        cartTotal,
+        totalQuantity,
+        totalProfit,
+        addToCart,
+        removeFromCart,
+        updateProductQuantity,
+        emptyCart,
+        updateCartItem,
+        holdCart,
+        setHeldCartToCart,
+        removeHeldItem,
+        heldCarts,
+      }}
+    >
+      {children}
+    </SalesContext.Provider>
   );
 };
 

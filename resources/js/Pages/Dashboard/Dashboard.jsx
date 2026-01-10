@@ -3,9 +3,7 @@ import { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, Link } from "@inertiajs/react";
 import {
-    Typography,
     Grid,
-    TextField,
     ListItem,
     List,
     ListItemButton,
@@ -16,7 +14,6 @@ import {
     Box,
     IconButton
 } from "@mui/material";
-import dayjs from "dayjs";
 import {
     Card,
     CardContent,
@@ -34,14 +31,18 @@ import numeral from "numeral";
 import Summaries from "./Partials/Summaries";
 import { SalesChart } from "./Partials/SalesChart";
 import { OverViewCards } from "./Partials/OverViewCards";
-import { DatePicker } from "@mui/x-date-pickers";
-import MUIDatePicker from "@/components/ui/MUIDatePicker";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { startOfDay, endOfDay } from "date-fns"
 
 export default function Dashboard({ data, logo, version, store_name }) {
     const auth = usePage().props.auth.user;
     const modules = usePage().props.modules;
-    const [startDate, setStartDate] = useState(dayjs().format("YYYY-MM-DD"));
-    const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
+
+    const [dateRange, setDateRange] = useState({
+        from: startOfDay(new Date()),
+        to: endOfDay(new Date()),
+    });
+    
 
     const [cash_in, setCashIn] = useState(0);
     const [total_sales, setTotalSales] = useState(0);
@@ -51,8 +52,8 @@ export default function Dashboard({ data, logo, version, store_name }) {
     const refreshSummary = async () => {
         try {
             const response = await axios.post("/dashboard/summary", {
-                start_date: startDate,
-                end_date: endDate,
+                start_date: dateRange?.from ,
+                end_date: dateRange?.to,
             });
             const { cash_in, total_sales, expenses, inventory_purchase } = response.data.summary;
             setCashIn(cash_in);
@@ -66,11 +67,11 @@ export default function Dashboard({ data, logo, version, store_name }) {
 
     useEffect(() => {
         refreshSummary();
-    }, []); // Empty dependency array means this runs once on mount
+    }, []); 
 
     useEffect(() => {
-        refreshSummary(); // Call whenever startDate or endDate changes
-    }, [startDate, endDate]);
+        refreshSummary(); 
+    }, [dateRange]);
 
     return (
         <AuthenticatedLayout
@@ -136,12 +137,7 @@ export default function Dashboard({ data, logo, version, store_name }) {
                                     spacing={2}
                                     width={"100%"}
                                 >
-                                    <Grid size={6}>
-                                        <MUIDatePicker name="start_date" label="Start Date" value={startDate} onChange={setStartDate} />
-                                    </Grid>
-                                    <Grid size={6}>
-                                        <MUIDatePicker name="end_date" label="End Date" value={endDate} onChange={setEndDate} />
-                                    </Grid>
+                                    <DateRangePicker value={dateRange} onChange={setDateRange}/>
                                 </Grid>
 
                                 <List>

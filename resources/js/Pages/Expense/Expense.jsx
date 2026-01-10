@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router } from "@inertiajs/react";
@@ -10,10 +9,9 @@ import {
     IconButton,
     Chip
 } from "@mui/material";
-import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
-import dayjs from "dayjs";
+import { useDate } from '@/hooks/useDate';
 import Swal from "sweetalert2";
 import axios from "axios";
 import numeral from "numeral";
@@ -22,7 +20,9 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import CustomPagination from "@/components/CustomPagination";
 import ExpenseDialog from "./Partials/ExpenseDialog";
 
-const columns = (handleRowClick) => [
+function columns(handleRowClick) {
+    const { formatDate  } = useDate();
+    return [
     { field: "id", headerName: "ID", width: 80 },
     {
         field: "expense_date",
@@ -30,7 +30,7 @@ const columns = (handleRowClick) => [
         width: 100,
         renderCell: (params) => {
             // Format the date to 'YYYY-MM-DD'
-            return dayjs(params.value).format("YYYY-MM-DD");
+            return formatDate(params.value, 'yyyy-MM-dd');
         },
     },
     { field: "description", headerName: "Description", width: 300 },
@@ -61,7 +61,8 @@ const columns = (handleRowClick) => [
             </>
         ),
     },
-];
+    ];
+};
 
 export default function Expense({ expenses, stores }) {
     const [dataExpenses, setDataExpenses] = useState(expenses);

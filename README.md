@@ -1,8 +1,8 @@
 #### README.md
 
-# InfoShop Point of Sale (POS) System
+# AyniShop Point of Sale (POS) System
 
-Welcome to the InfoShop Point of Sale (POS) System! This is a comprehensive application built with modern web technologies to streamline sales and inventory management.
+Welcome to the AyniShop Point of Sale (POS) System! This is a comprehensive application built with modern web technologies to streamline sales and inventory management.
 
 <h2><a href="https://clearcodeweb.xyz.lk/" target="_blank" rel="noopener noreferrer">Try the demo</a></h2>
 
@@ -30,11 +30,6 @@ To run this application, ensure you have the following installed:
 
 To get started with the POS system, follow these steps:
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/NifrasUsanar/InfoShop.git
-   cd InfoShop
-   ```
 
 2. **Install PHP dependencies**:
    ```bash
@@ -58,13 +53,13 @@ To get started with the POS system, follow these steps:
 
    Set up a new database in MySQL and update the database details in the `.env` file with the following fields:
 
-   Make sure to replace the values (e.g., db_infoshop, root, and the password) with your actual database name, username, and password. If your MySQL server does not require a password, leave the DB_PASSWORD field empty as shown.
+   Make sure to replace the values (e.g., db_aynihop, root, and the password) with your actual database name, username, and password. If your MySQL server does not require a password, leave the DB_PASSWORD field empty as shown.
 
    ```env
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
    DB_PORT=3306
-   DB_DATABASE=db_infoshop
+   DB_DATABASE=db_aynishop
    DB_USERNAME=root
    DB_PASSWORD=
    ```
@@ -114,17 +109,3 @@ The POS system includes the following modules:
 - Styled with **Tailwind CSS** for a clean and customizable look.
 - MySQL as the database for reliable data storage.
 
-## Attribution
-
-If you use this project or any of its contents, please provide proper attribution. You can mention:
-
-"This project is based on Infoshop by Infomax / Nifras Usanar."
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
----
-
-
-Feel free to contribute to this project or reach out with any questions. Happy coding! 🚀

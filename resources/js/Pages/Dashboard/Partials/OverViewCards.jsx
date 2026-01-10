@@ -12,6 +12,8 @@ import { usePage } from "@inertiajs/react"
 export function OverViewCards() {
     const { data } = usePage().props;
     const auth = usePage().props.auth.user;
+    const currency_symbol = usePage().props.settings.currency_symbol;
+
     return (
         <>
             {(auth.user_role == "admin" || auth.user_role == "super-admin") && (
@@ -38,7 +40,7 @@ export function OverViewCards() {
                             <ChartLine />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>Rs. {data.totalValuation}</div>
+                            <div className='text-2xl font-bold'>{currency_symbol} {data.totalValuation}</div>
                             {/* <p className='text-muted-foreground text-xs'>
                         +180.1% from last month
                     </p> */}
@@ -64,7 +66,7 @@ export function OverViewCards() {
                             <User />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>Rs. {data.customerBalance}</div>
+                            <div className='text-2xl font-bold'>{currency_symbol} {data.customerBalance}</div>
                             {/* <p className='text-muted-foreground text-xs'>
                         +201 since last hour
                     </p> */}

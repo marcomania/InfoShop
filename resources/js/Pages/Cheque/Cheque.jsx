@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router } from "@inertiajs/react";
@@ -11,14 +10,18 @@ import {
     MenuItem,
     Link
 } from "@mui/material";
-import dayjs from "dayjs";
 import numeral from "numeral";
 
 import { DataGrid } from "@mui/x-data-grid";
 import CustomPagination from "@/components/CustomPagination";
 import ChequeFormDialog from "./ChequeFormDialog";
+import { startOfDay, differenceInDays } from "date-fns";
+import { useDate } from '@/hooks/useDate';
 
-const columns = (handleRowClick) => [
+function useChequeColumns(handleRowClick) {
+    const { formatDate , formatRelativeTime, parseDate } = useDate();
+
+    return [
     {
         field: "id", headerName: "ID", width: 80,
         renderCell: (params) => {
@@ -27,7 +30,7 @@ const columns = (handleRowClick) => [
     },
     {
         field: "cheque_date", headerName: "Cheque Date", width: 120,
-        renderCell: (params) => dayjs(params.value).format("YYYY-MM-DD"), // Formats the date
+        renderCell: (params) => formatDate(params.value, "yyyy-MM-dd"), // Formats the date
     },
     {
         field: "cheque_number", headerName: "Cheque Number", width: 200,
@@ -61,22 +64,18 @@ const columns = (handleRowClick) => [
     {
         field: "days", headerName: "Days", width: 150,
         renderCell: (params) => {
-            const chequeDate = dayjs(params.row.cheque_date).startOf('day');
-            const today = dayjs().startOf('day');
-            const remainingDays = chequeDate.diff(today, 'day');
+            const remainingDays = formatRelativeTime(params.row.cheque_date)
+            const parsedDate = parseDate(params.row.cheque_date);
+        
             const isPending = params.row.status === 'pending';
 
             return (
                 <span
                     style={{
-                        color: isPending && remainingDays < 0 ? "red" : "inherit", // Red if remainingDays < 0 and status is pending
+                        color: isPending && parsedDate < new Date() ? "red" : "inherit", // Red if remainingDays < 0 and status is pending
                     }}
                 >
-                    {isPending
-                        ? remainingDays >= 0
-                            ? `${remainingDays} days remaining`
-                            : `${remainingDays} days passed`
-                        : "---"}
+                    {isPending ? remainingDays : "---"}
                 </span>
             );
 
@@ -94,8 +93,8 @@ const columns = (handleRowClick) => [
         renderCell: (params) => (
             <span title={params.value}>{params.value}</span> // Displays remark with a tooltip
         ),
-    },
-];
+    },];
+}
 
 
 export default function Cheque({ cheques, stores }) {
@@ -302,7 +301,7 @@ export default function Cheque({ cheques, stores }) {
             >
                 <DataGrid
                     rows={dataCheques?.data}
-                    columns={columns(handleRowClick)}
+                    columns={useChequeColumns(handleRowClick)}
                     hideFooter
                 />
             </Box>

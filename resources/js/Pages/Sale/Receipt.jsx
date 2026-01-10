@@ -20,14 +20,16 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { styled } from "@mui/material/styles";
 import numeral from "numeral";
-import dayjs from "dayjs";
 import { useReactToPrint } from "react-to-print";
 import Barcode from "./Barcode";
 import writtenNumber from 'written-number';
+import { useDate } from "@/hooks/useDate";
+
 
 export default function Receipt({ sale, salesItems, settings, user_name, credit_sale = false }) {
     const user = usePage().props.auth.user;
     const currency_symbol = usePage().props.settings.currency_symbol;
+    const { formatDate } = useDate();
 
     const contentRef = useRef(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
@@ -180,7 +182,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
             "------------------------------------------",
             `RUC: 10082646341`,
             `Order: ${receiptNo}`,
-            `Date: ${dayjs(sale.created_at).format("DD-MMM-YYYY, h:mm A")}`,
+            `Date: ${formatDate(sale.created_at)}`,
             "------------------------------------------",
             " Cant  | Producto             |  Total",
             "------------------------------------------",
@@ -299,9 +301,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                             textAlign={"start"}
                                         >
                                             Fecha:
-                                            {dayjs(sale.created_at).format(
-                                                "YYYY-MM-DD, h:mm A"
-                                            ) + " "}
+                                            {formatDate(sale.created_at) + " "}
                                             By: {user_name}
                                         </Typography>
                                     </>
@@ -314,9 +314,7 @@ export default function Receipt({ sale, salesItems, settings, user_name, credit_
                                             textAlign={"start"}
                                         >
                                             Print date:
-                                            {dayjs(sale.created_at).format(
-                                                "DD-MMM-YYYY, h:mm A"
-                                            ) + " "}
+                                            {formatDate(sale.created_at) + " "}
                                         </Typography>
                                     </>
                                 )}

@@ -14,20 +14,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import Swal from "sweetalert2";
-import dayjs from "dayjs";
-
-const initialChequeFormState = {
-    cheque_number: '',
-    cheque_date: dayjs().format("YYYY-MM-DD"),
-    name: '',
-    amount: 0,
-    issued_date: dayjs().format("YYYY-MM-DD"),
-    bank: '',
-    status: 'pending',
-    remark: '',
-    direction: 'issued',
-    store_id: 1
-};
+import { useDate } from '@/hooks/useDate';
 
 export default function ChequeFormDialog({
     open,
@@ -36,6 +23,20 @@ export default function ChequeFormDialog({
     refreshCheques,
     selectedCheque
 }) {
+    const { formatDate } = useDate();
+
+    const initialChequeFormState = () => ({
+        cheque_number: '',
+        cheque_date: formatDate(new Date(), 'yyyy-MM-dd'),
+        name: '',
+        amount: 0,
+        issued_date: formatDate(new Date(), 'yyyy-MM-dd'),
+        bank: '',
+        status: 'pending',
+        remark: '',
+        direction: 'issued',
+        store_id: 1
+    });
 
     const [chequeForm, setChequeFormState] = useState(initialChequeFormState);
 
@@ -55,10 +56,10 @@ export default function ChequeFormDialog({
         if (selectedCheque) {
             setChequeFormState({
                 cheque_number: selectedCheque.cheque_number || '',
-                cheque_date: selectedCheque.cheque_date || dayjs().format("YYYY-MM-DD"),
+                cheque_date: selectedCheque.cheque_date || formatDate(new Date(), 'yyyy-MM-dd'),
                 name: selectedCheque.name || '',
                 amount: selectedCheque.amount || 0,
-                issued_date: selectedCheque.issued_date || dayjs().format("YYYY-MM-DD"),
+                issued_date: selectedCheque.issued_date || formatDate(new Date(), 'yyyy-MM-dd'),
                 bank: selectedCheque.bank || '',
                 status: selectedCheque.status || 'pending',
                 remark: selectedCheque.remark || '',

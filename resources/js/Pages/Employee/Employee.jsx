@@ -13,7 +13,6 @@ import {
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/HighlightOff';
-import dayjs from "dayjs";
 import Swal from "sweetalert2";
 import axios from "axios";
 import numeral from "numeral";
@@ -24,107 +23,114 @@ import EmployeeDialog from "./Partials/EmployeeDialog";
 import SalaryFormDialog from "./Partials/SalaryFormDialog";
 import EmployeeBalanceDialog from "./Partials/EmployeeBalanceDialog";
 import PrintIcon from "@mui/icons-material/Print";
+import { useDate } from '@/hooks/useDate';
 
-const columns = (handleRowClick) => [
-    { field: "id", headerName: "ID", width: 80 },
-    {
-        field: "name",
-        headerName: "Name",
-        width: 200,
-        renderCell: (params) => (
-            <Link underline="hover" href='#' className='hover:underline' onClick={(event) => { event.preventDefault(); handleRowClick(params.row, 'employee_edit'); }}>
-                <p className='font-bold'>{params.value}</p>
-            </Link>
-        ),
-    },
-    {
-        field: "contact_number",
-        headerName: "Contact Number",
-        width: 150,
-    },
-    {
-        field: "address",
-        headerName: "Address",
-        width: 300,
-    },
-    {
-        field: "joined_at",
-        headerName: "Joined At",
-        width: 120,
-        renderCell: (params) => {
-            return dayjs(params.value).format("YYYY-MM-DD");
+
+function useEmployeeColumns(handleRowClick) {
+    const { formatDate } = useDate();
+
+    return [
+
+        { field: "id", headerName: "ID", width: 80 },
+        {
+            field: "name",
+            headerName: "Name",
+            width: 200,
+            renderCell: (params) => (
+                <Link underline="hover" href='#' className='hover:underline' onClick={(event) => { event.preventDefault(); handleRowClick(params.row, 'employee_edit'); }}>
+                    <p className='font-bold'>{params.value}</p>
+                </Link>
+            ),
         },
-    },
-    {
-        field: "salary",
-        headerName: "Salary",
-        width: 180,
-        align: 'right', headerAlign: 'right',
+        {
+            field: "contact_number",
+            headerName: "Contact Number",
+            width: 150,
+        },
+        {
+            field: "address",
+            headerName: "Address",
+            width: 300,
+        },
+        {
+            field: "joined_at",
+            headerName: "Joined At",
+            width: 120,
+            renderCell: (params) => {
+                return formatDate(new Date(), 'yyyy-MM-dd');
+            },
+        },
+        {
+            field: "salary",
+            headerName: "Salary",
+            width: 180,
+            align: 'right', headerAlign: 'right',
 
-        renderCell: (params) => (
-            <Button
-                onClick={() => handleRowClick(params.row, 'add_salary')}
-                variant="text"
-                fullWidth
-                sx={{
-                    textAlign: "left",
-                    fontWeight: "bold",
-                    justifyContent: "flex-end",
-                }}
-            >
-                {numeral(params.value).format('0,0.00') + ' / ' + params.row.salary_frequency}
-            </Button>
-        ),
-    },
-    {
-        field: "balance",
-        headerName: "Balance",
-        width: 120,
-        align: 'right', headerAlign: 'right',
-        renderCell: (params) => (
-            <Button
-                onClick={() => handleRowClick(params.row, 'update_balance')}
-                variant="text"
-                fullWidth
-                sx={{
-                    textAlign: "left",
-                    fontWeight: "bold",
-                    justifyContent: "flex-end",
-                }}
-            >
-                {numeral(params.value).format('0,0.00')}
-            </Button>
-        ),
-    },
-    {
-        field: "role",
-        headerName: "Role",
-        width: 120,
-    },
-    {
-        field: "status",
-        headerName: "Status",
-        width: 120,
-    },
-    {
-        field: 'action',
-        headerName: 'Actions',
-        width: 150, align: 'right', headerAlign: 'right',
-        renderCell: (params) => (
-            <>
-            <Link href={"/employee-balance-log?employee=" + params.row.id}>
-            <IconButton sx={{ ml: '0.3rem' }} color="primary">
-                    <PrintIcon />
-                </IconButton>
-            </Link>
-                
-                <IconButton sx={{ ml: '0.3rem' }} color="error" onClick={() => handleRowClick(params.row, "delete_employee")}>
-                    <DeleteIcon />
-                </IconButton>
-            </>
-        ),
-    },
-];
+            renderCell: (params) => (
+                <Button
+                    onClick={() => handleRowClick(params.row, 'add_salary')}
+                    variant="text"
+                    fullWidth
+                    sx={{
+                        textAlign: "left",
+                        fontWeight: "bold",
+                        justifyContent: "flex-end",
+                    }}
+                >
+                    {numeral(params.value).format('0,0.00') + ' / ' + params.row.salary_frequency}
+                </Button>
+            ),
+        },
+        {
+            field: "balance",
+            headerName: "Balance",
+            width: 120,
+            align: 'right', headerAlign: 'right',
+            renderCell: (params) => (
+                <Button
+                    onClick={() => handleRowClick(params.row, 'update_balance')}
+                    variant="text"
+                    fullWidth
+                    sx={{
+                        textAlign: "left",
+                        fontWeight: "bold",
+                        justifyContent: "flex-end",
+                    }}
+                >
+                    {numeral(params.value).format('0,0.00')}
+                </Button>
+            ),
+        },
+        {
+            field: "role",
+            headerName: "Role",
+            width: 120,
+        },
+        {
+            field: "status",
+            headerName: "Status",
+            width: 120,
+        },
+        {
+            field: 'action',
+            headerName: 'Actions',
+            width: 150, align: 'right', headerAlign: 'right',
+            renderCell: (params) => (
+                <>
+                    <Link href={"/employee-balance-log?employee=" + params.row.id}>
+                        <IconButton sx={{ ml: '0.3rem' }} color="primary">
+                            <PrintIcon />
+                        </IconButton>
+                    </Link>
+
+                    <IconButton sx={{ ml: '0.3rem' }} color="error" onClick={() => handleRowClick(params.row, "delete_employee")}>
+                        <DeleteIcon />
+                    </IconButton>
+                </>
+            ),
+        },
+    ];
+}
 
 export default function Employee({ employees, stores, }) {
     const [dataEmployees, setDataEmployees] = useState(employees);
@@ -297,7 +303,7 @@ export default function Employee({ employees, stores, }) {
             >
                 <DataGrid
                     rows={dataEmployees?.data}
-                    columns={columns(handleRowClick)}
+                    columns={useEmployeeColumns(handleRowClick)}
                     initialState={{
                         columns: {
                             columnVisibilityModel: {

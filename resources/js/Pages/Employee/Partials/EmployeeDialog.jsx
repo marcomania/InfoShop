@@ -14,13 +14,13 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import Swal from "sweetalert2";
-import dayjs from "dayjs";
+import { format } from "date-fns";
 
 const initialEmployeeFormState = {
     name: '',
     contact_number: '',
     address: '',
-    joined_at: dayjs().format("YYYY-MM-DD"), // Today's date in 'YYYY-MM-DD' format
+    joined_at: format(new Date(), "yyyyy-MM-dd"),
     salary: 0,
     salary_frequency: 'Monthly',
     role: '',
@@ -92,7 +92,7 @@ export default function EmployeeDialog({
 
     useEffect(() => {
         if (employee) {
-            setEmployeeFormState({ ...employee, joined_at: dayjs(employee.joined_at).format("YYYY-MM-DD") });
+            setEmployeeFormState({ ...employee, joined_at: format(employee.joined_at,"yyyy-MM-dd") });
         }
         else setEmployeeFormState(initialEmployeeFormState)
     }, [employee]);

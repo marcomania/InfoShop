@@ -4,18 +4,18 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    container_name: infoshop-app
+    container_name: aynishop-app
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
     networks:
-      - infoshop-network
+      - aynishop-network
 
   # Servidor Web Nginx
   nginx:
     image: nginx:1.25-alpine
-    container_name: infoshop-nginx
+    container_name: aynishop-nginx
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -25,36 +25,36 @@ services:
     depends_on:
       - app
     networks:
-      - infoshop-network
+      - aynishop-network
 
   # Base de Datos PostgreSQL
   db:
     image: mysql:8
-    container_name: infoshop-db
+    container_name: aynishop-db
     restart: unless-stopped
     ports:
       - "3306:3306"
     volumes:
-      - infoshop-db-data:/var/lib/mysql
+      - aynishop-db-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-rootpassword}
       MYSQL_DATABASE: ${DB_DATABASE:-laravel}
     networks:
-      - infoshop-network
+      - aynishop-network
 
   # Capturador de Email
   mailpit:
     image: axllent/mailpit:latest
-    container_name: infoshop-mailpit
+    container_name: aynishop-mailpit
     restart: unless-stopped
     ports:
       - "1025:1025" # Puerto SMTP
       - "8025:8025" # Interfaz Web
 
 networks:
-  infoshop-network:
+  aynishop-network:
     driver: bridge
 
 volumes:
-  infoshop-db-data:
+  aynishop-db-data:
     driver: local

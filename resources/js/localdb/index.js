@@ -1,6 +1,6 @@
 import Dexie from 'dexie';
 
-export const db = new Dexie('db_infoshop');
+export const db = new Dexie('db_aynishop');
 
 db.version(1).stores({
   pos_products: `

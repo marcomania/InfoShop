@@ -6,7 +6,7 @@ import { useSales as useCart } from '@/Context/SalesContext';
 import { Banknote, CheckCircle2, ShoppingCart } from 'lucide-react';
 import numeral from 'numeral';
 import PaymentsCheckoutDialog from '@/components/PaymentsCheckoutDialog';
-import dayjs from 'dayjs';
+import { useDate } from '@/hooks/useDate';
 
 const Catalog = ({ open, id, onClose }) => {
     const [searchProduct, setSearchProduct] = useState("");
@@ -158,7 +158,10 @@ export default Catalog;
 
 const Cart = ({ cartState, contact_id, useCart }) => {
     const [paymentsModalOpen, setPaymentsModalOpen] = useState(false);
-    const [sale_date, setSaleDate] = useState(dayjs().format("YYYY-MM-DD"));
+
+    const { formatDate } = useDate();
+    const [sale_date, setSaleDate] = useState(formatDate(new Date(), 'yyyy-MM-dd'));
+
     if (!cartState.length) return <div className="p-4">Your cart is empty</div>;
     const { cartTotal } = useCart();
     return (

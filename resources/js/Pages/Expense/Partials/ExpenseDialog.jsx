@@ -19,8 +19,8 @@ import dayjs from "dayjs";
 import { usePage } from "@inertiajs/react";
 
 const initialPaymentFormState = {
-    amount: 0,
-    expense_date: dayjs().format("YYYY-MM-DD"), // Today's date in 'YYYY-MM-DD' format
+    amount: 12,
+    expense_date: "", // Today's date in 'YYYY-MM-DD' format
     description: '',
     store_id: 1,
     source:'drawer'

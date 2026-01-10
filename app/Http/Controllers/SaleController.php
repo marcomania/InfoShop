@@ -250,6 +250,8 @@ class SaleController extends Controller
     {
         $settings = Setting::all();
         $settingArray = $settings->pluck('meta_value', 'meta_key')->all();
+        $settingArray['shop_logo'] = asset($settingArray['shop_logo']);
+        
         $sales = Sale::select(
             'sales.id',
             'sale_date',              // Sale date

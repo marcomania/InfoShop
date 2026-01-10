@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import dayjs from 'dayjs';
+import { useDate } from '@/hooks/useDate';
 // Create SharedContext
 export const SharedContext = createContext();
 
@@ -11,7 +11,9 @@ export const SharedProvider = ({ children }) => {
     const [cartItemModalOpen, setCartItemModalOpen] = useState(false)
     const [selectedCartItem, setSelectedCartItem] = useState(null)
     const [selectedLabel, setSelectedLabel] = useState('');
-    const [saleDate, setSaleDate] = useState(dayjs().format('YYYY-MM-DD'));
+
+    const { formatDate } = useDate();
+    const [saleDate, setSaleDate] = useState(formatDate(new Date(), 'yyyy-MM-dd'));
 
     return (
         <SharedContext.Provider
